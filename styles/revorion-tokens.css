@@ -1,0 +1,127 @@
+/* ═══════════════════════════════════════════════
+   REVORION — Design Tokens
+   Source of truth for all values.
+   Import first in every stylesheet.
+═══════════════════════════════════════════════ */
+
+:root {
+  /* ── Colors ─────────────────────────────────── */
+  --chalk:        #F7F7F7;   /* global light page bg, light surfaces */
+  --hero-canvas:  #EFEFEF;   /* hero ASCII zone — step below --chalk */
+  --hero-strip-bg: #F6F6F6; /* Figma 2426:172 frame fill */
+  --ink:          #0f0f0d;   /* text, borders, dark surfaces */
+  --ash:          #888880;   /* muted labels, timestamps */
+  --moss:         #555550;   /* secondary body text */
+  --cfo-panel-mark: #58594C;  /* CFO „For the CFO“ kvadrat */
+  --cfo-contract-chromatic-lag: 0.18s; /* isti pomak kao CONTRACT_SUBTLE_LAG_MS u cfo-invoice-scramble.js */
+  --mist:         #c0bdb5;   /* tertiary/disabled */
+  /* Hairlines — low-contrast vs chalk so dividers stay visible but quiet */
+  --rule:         color-mix(in srgb, var(--ink) 10%, var(--chalk));
+  --rule-on-ink:  rgba(247, 247, 247, 0.2); /* chalk tint on ink — subtler than before */
+  --nav-rule:     var(--rule);
+  --sage-hover:   #929d85;   /* hover accent, button hover */
+  /* ~20% tamnije od --sage-hover (sekundarno dugme hover) */
+  --sage-hover-dark: color-mix(in srgb, var(--sage-hover), var(--ink) 20%);
+  --accent-hot:   #FF3D04;   /* brand accent — use sparingly (Figma DS) */
+  --ink-15:       rgba(15, 15, 13, 0.15);
+  --ink-10:       rgba(15, 15, 13, 0.10);
+  --ink-04:       rgba(15, 15, 13, 0.04);
+  --chalk-45:     rgba(247, 247, 247, 0.45);
+  --chalk-15:     rgba(247, 247, 247, 0.15);
+  --chalk-10:     rgba(247, 247, 247, 0.10);
+
+  /* ── Legacy aliases (canvas JS reads these) ─── */
+  --color-bg:        var(--chalk);
+  --color-ink:       #0f0f0d;
+  --color-accent:    #929d85;
+  --color-cream:     var(--chalk);
+  --color-sage:      #929d85;
+  --color-sage-mid:  #929d85;
+  --color-body:      #555550;
+  --color-muted:     #888880;
+  --color-paper:     var(--chalk);
+  --color-ink-pure:  #0f0f0d;
+  --color-sage-light: #b8c0ae;
+  --color-sage-dark: #6e7867;
+  --color-hairline:  rgba(15, 15, 13, 0.10);
+  --color-line:      rgba(15, 15, 13, 0.12);
+
+  /* ── Fonts ───────────────────────────────────── */
+  /* Kit: use.typekit.net/zgi6jmo.css
+     Adobe CSS family: "neue-haas-grotesk-display" (= Neue Haas Grotesk Display Pro u katalogu). */
+  --font-adobe-family-display: "neue-haas-grotesk-display";
+  --font-display: var(--font-adobe-family-display), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* Sav tekst osim mono koristi Display Pro (isti stack kao --font-display). */
+  --font-sans:  var(--font-display);
+  --font-mono:  "JetBrains Mono", ui-monospace, "Fira Code", monospace;
+  --font-serif: var(--font-display);  /* legacy alias */
+  /* Default weight za prose / UI sans (sve osim mono i eksplicitnih naslova) */
+  --font-weight-body: 500;
+
+  /* Mono UI — same rhythm as location ticker */
+  --type-mono-ui-size:     0.625rem;
+  --type-mono-ui-tracking: 0.16em;
+
+  /* ── Buttons (primary / secondary / primary-light) ─ */
+  --btn-height:         48px;
+  --btn-fixed-width:    204px; /* jednaka širina svih CTA — uklapa najduže mono labele */
+  --btn-inline-padding: 29px;
+
+  /* ── Border ──────────────────────────────────── */
+  --border-width:       1px;
+  --border-width-quote: 2px;
+  --border-rule:        var(--border-width) solid var(--rule);
+  --border-rule-on-ink: var(--border-width) solid var(--rule-on-ink);
+
+  /* ── Spacing ──────────────────────────────────── */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+  --space-18:  72px;
+  --space-20:  80px;
+  --section-gap: 80px;
+
+  /* ── Content rhythm ────────────────────────────
+     Consistent vertical gaps between content blocks.
+     Use these instead of magic-number margins. */
+  --gap-tight:         var(--space-4);   /* 16px */
+  --gap-base:          var(--space-8);   /* 32px */
+  --gap-loose:         var(--space-12);  /* 48px */
+  --gap-section-label: var(--space-12);  /* 48px — ■ label → content */
+  --gap-section-block: var(--space-16);  /* 64px — header → content grid */
+
+  /* ── Nav ──────────────────────────────────────── */
+  /* Base bar was 52×1.3×1.3; −30% height → ×0.7 (~61.5px) */
+  --nav-height:         calc(52px * 1.3 * 1.3 * 0.7);
+  --nav-link-font-size: var(--space-3); /* 12px — Industries / Contact */
+  --nav-link-tracking:  0.8px; /* Industries / Contact nav */
+  --nav-link-cta-gap:   100px; /* space between text links and Book a Demo */
+
+  /* World-clock ticker row (padding + mono line) — keep in sync with .ticker */
+  --ticker-band-height: 32px;
+
+  /* Extra height for hero ASCII canvas zone (beyond fluid clamp) */
+  --hero-canvas-extra: 100px;
+
+  /* Hero H1 block: lift from bottom of canvas zone */
+  --hero-heading-lift: 50px;
+
+  /* #problem intro: nudge down to optically match .type-h1 cap / first line */
+  --problem-intro-optical-offset: var(--space-3);
+
+  /* #problem numbered grid — vertical offset below header */
+  --problem-grid-margin-top: 200px;
+
+  /* ── Duration / Easing ────────────────────────── */
+  --duration-fast:     150ms;
+  --duration-medium:   300ms;
+  --duration-slow:     500ms;
+  --duration-entrance: 600ms;
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}

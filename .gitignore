@@ -1,3 +1,6 @@
 .DS_Store
 .vercel
 *.log
+.venv/
+.cursor/
+assets/enhanced_image_01.png

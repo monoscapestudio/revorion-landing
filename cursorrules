@@ -1,0 +1,292 @@
+# REVORION — Cursor Rules
+# Read this before every edit. These rules are non-negotiable.
+
+## Project
+Revorion is a B2B enterprise SaaS landing page for revenue leakage detection.
+Visual language: cold, precise, institutional. Reference: Palantir investor materials.
+Design system tokens are in: styles/revorion-tokens.css — import this first in every CSS file.
+
+---
+
+## Fonts — THREE ONLY
+
+| Role | Font | CSS Variable |
+|------|------|-------------|
+| Headlines, display | Test Financier Display | var(--font-serif) |
+| Body, UI, paragraphs | Test Söhne | var(--font-sans) |
+| Buttons, labels, mono UI | Test Söhne Mono | var(--font-mono) |
+
+NEVER use: Inter, Roboto, system-ui, -apple-system, or any other font.
+
+---
+
+## Typography Scale — USE ONLY THESE
+
+```css
+/* Headlines — var(--font-serif) */
+.type-hero        /* clamp(72px, 12vw, 168px) — hero only, full-bleed */
+.type-display     /* clamp(36px, 5vw, 96px) — section openers */
+.type-heading     /* 48px fixed */
+.type-subheading  /* 32px fixed */
+.type-heading-md  /* 24px fixed */
+
+/* Body — var(--font-sans) */
+.type-body-lg     /* 18px — intro paragraphs */
+.type-body        /* 16px — standard body, NEVER below 16px */
+.type-body-sm     /* 14px — secondary descriptions */
+
+/* UI — var(--font-mono) */
+.type-micro       /* 12px +5% tracking */
+.type-whisper     /* 12px +22% tracking uppercase — section numbers */
+.type-button      /* 12.8px +10% tracking uppercase — ALL button labels */
+.type-label       /* 11px +8% tracking uppercase */
+.type-caption     /* 10px +5% tracking */
+```
+
+Rules:
+- Body text (type-body, type-body-lg, type-body-sm) NEVER scales — always fixed px
+- All mono styles NEVER scale — always fixed px
+- Only headline styles use clamp()
+- NEVER hardcode font-size values — use the utility classes
+
+---
+
+## Colors — NEVER HARDCODE HEX
+
+Always use CSS variables from revorion-tokens.css.
+
+```css
+/* Dark mode (default :root) */
+var(--color-bg)        /* #0E0F0C */
+var(--color-surface)   /* #1A1B17 */
+var(--color-paper)     /* #222320 */
+var(--color-ink)       /* #F3F0E8 */
+var(--color-body)      /* #D1D3C8 */
+var(--color-muted)     /* #9C9E93 */
+var(--color-hint)      /* #6B6D65 */
+var(--color-hairline)  /* #2C2E28 */
+var(--color-accent)    /* #FF3D04 — one accent, one instance per viewport */
+var(--color-sage)      /* #929D85 */
+var(--color-sage-mid)  /* #848E78 — light mode primary btn bg */
+var(--color-cream)     /* #EBEDE0 — dark mode primary btn bg */
+```
+
+Light mode: add [data-theme="light"] to <html>. Sage and accent are unchanged.
+
+---
+
+## Border Radius — ZERO ALWAYS
+
+```css
+border-radius: 0; /* No exceptions. Not 2px. Not 4px. Zero. */
+```
+
+---
+
+## Buttons
+
+```css
+height: 48px;
+min-width: 200px;
+padding: 12px 24px;
+border-radius: 0;
+font-family: var(--font-mono);
+font-size: 12.8px;
+letter-spacing: 0.10em;
+text-transform: uppercase;
+
+/* Dark mode primary */
+background: var(--color-cream);
+color: var(--color-ink-pure);
+
+/* Dark mode primary hover */
+background: #ffffff;
+
+/* Dark mode secondary */
+background: transparent;
+border: 1px solid var(--color-cream);
+color: var(--color-cream);
+
+/* Light mode primary */
+background: var(--color-sage-mid);
+color: var(--color-ink-pure);
+
+/* Ghost hover */
+color: var(--color-accent);
+
+/* Disabled */
+opacity: 0.35;
+```
+
+ONE primary button per viewport. Never two side by side.
+
+---
+
+## Responsive Model — HYBRID A+C
+
+Revorion uses a HYBRID approach:
+- HeroTitle and Closing CTA: full-bleed, viewport-relative (Obys-style)
+- All other content: fluid grid, NO fixed max-width cap, margins switch from px to vw above 1440px
+
+### Breakpoint table
+
+| Breakpoint | Width | Cols | Gutter | Margin | Content | Margin type |
+|-----------|-------|------|--------|--------|---------|------------|
+| mobile | 375px | 4 | 16px | 20px | 335px | fixed px |
+| tablet | 768px | 8 | 24px | 32px | 704px | fixed px |
+| laptop | 1024px | 12 | 24px | 48px | 928px | fixed px |
+| desktop | 1280px | 12 | 32px | 64px | 1152px | fixed px |
+| baseline | 1440px | 12 | 32px | 80px | 1280px | fixed px |
+| large | 1920px | 12 | 32px | 5vw | ~1728px | fluid vw |
+| QHD | 2560px | 12 | 40px | 8vw | ~2150px | fluid vw |
+| 4K | 3840px | 12 | 48px | 12vw | ~2918px | fluid vw |
+
+### Media queries to use
+
+```css
+/* Mobile-first */
+/* default = 375px */
+
+@media (min-width: 768px)  { /* tablet */ }
+@media (min-width: 1024px) { /* laptop */ }
+@media (min-width: 1280px) { /* desktop */ }
+@media (min-width: 1440px) { /* baseline — primary design target */ }
+@media (min-width: 1920px) { /* large — switch to fluid vw margins */ }
+@media (min-width: 2560px) { /* QHD */ }
+@media (min-width: 3840px) { /* 4K */ }
+```
+
+### Container implementation
+
+```css
+.container {
+  width: 100%;
+  padding-inline: 20px; /* mobile default */
+}
+
+@media (min-width: 768px)  { .container { padding-inline: 32px; } }
+@media (min-width: 1024px) { .container { padding-inline: 48px; } }
+@media (min-width: 1280px) { .container { padding-inline: 64px; } }
+@media (min-width: 1440px) { .container { padding-inline: 80px; } }
+@media (min-width: 1920px) { .container { padding-inline: 5vw;  } }
+@media (min-width: 2560px) { .container { padding-inline: 8vw;  } }
+@media (min-width: 3840px) { .container { padding-inline: 12vw; } }
+```
+
+NO max-width on .container. Content is never capped.
+
+### Full-bleed (only these two)
+
+1. **`h1.type-hero`** in the hero canvas strip — headline only; full width of the viewport band with `padding-inline` from the page gutter scale (see `.hero-text` in globals). Subtitle, trust bar, and nav CTAs stay in the normal padded flow.
+2. **Closing CTA section** (`.cta`) — entire block edge-to-edge horizontally (background band); inner `.wrap` supplies `padding-inline`. No layout `max-width` cap on wrappers.
+
+```css
+/* Example: breakout when nested inside a padded parent (rare on this landing) */
+.full-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  box-sizing: border-box;
+}
+```
+
+### Typography responsive
+
+```css
+/* These scale — clamp() — canonical hero min = 72px (not 48px; 48px was draft) */
+.type-hero    { font-size: clamp(72px, 12vw, 168px); }
+.type-display { font-size: clamp(32px, 5vw, 96px);  }
+
+/* These are fixed — NEVER scale */
+.type-heading     { font-size: 48px; }
+.type-subheading  { font-size: 32px; }
+.type-heading-md  { font-size: 24px; }
+.type-body-lg     { font-size: 18px; }
+.type-body        { font-size: 16px; } /* MINIMUM — never go below */
+.type-body-sm     { font-size: 14px; }
+/* All mono types: always fixed */
+```
+
+### Grid columns
+
+```css
+.grid {
+  display: grid;
+  gap: 16px; /* mobile gutter */
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    gap: 24px;
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    gap: 24px;
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid { gap: 32px; }
+}
+```
+
+---
+
+## Spacing — USE TOKENS ONLY
+
+```css
+var(--space-1)  /* 4px  */
+var(--space-2)  /* 8px  */
+var(--space-3)  /* 12px */
+var(--space-4)  /* 16px */
+var(--space-6)  /* 24px */
+var(--space-8)  /* 32px */
+var(--space-12) /* 48px */
+var(--space-16) /* 64px */
+var(--space-20) /* 80px */
+var(--space-30) /* 120px */
+var(--section-gap) /* 80px desktop, 64px tablet, 48px mobile */
+```
+
+---
+
+## Motion
+
+```css
+transition: all var(--duration-fast) var(--ease-smooth); /* hover states */
+
+/* Scroll entrance */
+opacity: 0;
+transform: translateY(20px);
+/* → */
+opacity: 1;
+transform: translateY(0);
+transition: opacity var(--duration-entrance) var(--ease-smooth),
+            transform var(--duration-entrance) var(--ease-smooth);
+
+/* Always respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; transform: none !important; }
+}
+```
+
+---
+
+## NEVER DO
+
+- border-radius on anything
+- hardcode hex colors
+- hardcode font-family (use var(--font-*))
+- hardcode font-size outside the type scale
+- use Inter, Roboto, system-ui
+- use gradients
+- use blue anywhere
+- use box-shadow for decoration
+- place two primary buttons in same viewport
+- set max-width on .container
+- scale body text below 16px

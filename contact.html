@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Revorion</title>
+  <meta name="description" content="Book a demo or talk to our team. Email us at sales@revorion.ai. Direct response within 1 business day.">
+  <meta property="og:title" content="Contact — Revorion">
+  <meta property="og:description" content="Book a demo or talk to our team. No pitch decks. Direct from the team.">
+  <meta property="og:type" content="website">
+  <meta name="robots" content="index, follow">
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/globals.css">
+  <style>
+    /* ── Contact hero ── */
+    .contact-hero {
+      background: var(--chalk);
+      border-bottom: var(--border-width) solid var(--rule);
+      padding: 72px 0 0;
+    }
+    .contact-hero__inner { padding-inline: var(--page-padding-inline); }
+    .contact-hero__row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: end;
+      margin-top: 48px;
+    }
+    .contact-hero__heading { color: var(--ink); }
+    .contact-hero__paths {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: var(--border-width) solid var(--rule);
+      margin-bottom: 4px;
+    }
+    .contact-hero__path {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: var(--border-width) solid var(--rule);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .contact-hero__path:last-child { border-bottom: none; }
+    .contact-hero__path:hover { background: var(--ink-04); }
+    .contact-hero__path-label { color: var(--ink); }
+    .contact-hero__path-arrow {
+      color: var(--ash);
+      font-family: var(--font-mono);
+      font-size: var(--type-mono-ui-size);
+      letter-spacing: var(--type-mono-ui-tracking);
+      text-transform: uppercase;
+    }
+    .contact-hero__email-row {
+      border-top: var(--border-width) solid var(--rule);
+      padding: 36px 0;
+    }
+    .contact-hero__email { color: var(--moss); }
+
+    /* ── Forms section ── */
+    .forms-section {
+      background: var(--chalk);
+      border-bottom: var(--border-width) solid var(--rule);
+    }
+    .forms-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-inline: var(--page-padding-inline);
+    }
+    .form-col {
+      padding: 72px 0;
+    }
+    .form-col:first-child {
+      padding-right: 80px;
+      border-right: var(--border-width) solid var(--rule);
+    }
+    .form-col:last-child {
+      padding-left: 80px;
+    }
+    .form-col__path-label { color: var(--ash); margin-bottom: 20px; }
+    .form-col__heading { color: var(--ink); margin-bottom: 16px; }
+    .form-col__body { color: var(--moss); margin-bottom: 40px; }
+
+    /* ── Form fields ── */
+    .form { display: flex; flex-direction: column; gap: 0; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 20px 0;
+      border-bottom: var(--border-width) solid var(--rule);
+    }
+    .field:first-child { border-top: var(--border-width) solid var(--rule); }
+
+    .field__label {
+      font-family: var(--font-mono);
+      font-size: var(--type-mono-ui-size);
+      letter-spacing: var(--type-mono-ui-tracking);
+      text-transform: uppercase;
+      color: var(--ash);
+    }
+
+    .field__input,
+    .field__select,
+    .field__textarea {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: var(--font-weight-body);
+      color: var(--ink);
+      padding: 0;
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .field__input::placeholder,
+    .field__textarea::placeholder { color: var(--mist); }
+    .field__input:focus,
+    .field__select:focus,
+    .field__textarea:focus { color: var(--ink); }
+
+    .field__select {
+      cursor: pointer;
+      color: var(--mist);
+    }
+    .field__select option { color: var(--ink); background: var(--chalk); }
+
+    .field__textarea {
+      resize: none;
+      min-height: 120px;
+      line-height: 1.5;
+    }
+
+    .form__submit {
+      margin-top: 32px;
+    }
+
+    /* ── Trust signals ── */
+    .trust {
+      background: var(--chalk);
+      border-bottom: var(--border-width) solid var(--rule);
+      padding: 64px 0;
+    }
+    .trust__inner { padding-inline: var(--page-padding-inline); }
+    .trust__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--ink);
+      border: var(--border-rule-on-ink);
+    }
+    .trust__item {
+      background: var(--chalk);
+      padding: 32px 28px;
+      border-left: var(--border-width) solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .trust__item:first-child { border-left: none; }
+    .trust__tag { color: var(--ink); }
+    .trust__body { color: var(--moss); }
+
+    @media (max-width: 900px) {
+      .contact-hero__row   { grid-template-columns: 1fr; gap: 40px; }
+      .forms-grid          { grid-template-columns: 1fr; }
+      .form-col:first-child { padding-right: 0; border-right: none; border-bottom: var(--border-width) solid var(--rule); }
+      .form-col:last-child  { padding-left: 0; }
+      .trust__grid          { grid-template-columns: 1fr 1fr; }
+      .trust__item:nth-child(n+3) { border-top: var(--border-width) solid var(--rule); }
+      .trust__item:nth-child(2n+1) { border-left: none; }
+    }
+
+    @media (max-width: 480px) {
+      .trust__grid { grid-template-columns: 1fr; }
+      .trust__item { border-left: none; }
+      .trust__item + .trust__item { border-top: var(--border-width) solid var(--rule); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-outline" aria-hidden="true"></div>
+
+<!-- ─── NAV ─────────────────────────────────────────── -->
+<nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo" aria-label="Revorion homepage">
+      <svg width="221" height="141" viewBox="0 0 221 141" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M155.937 119.006C155.924 116.204 158.184 113.922 160.985 113.909L176.197 113.838C178.998 113.825 181.279 116.085 181.292 118.887L181.363 134.108C181.376 136.91 179.117 139.192 176.316 139.205L161.103 139.276C158.303 139.289 156.022 137.028 156.009 134.226L155.937 119.006Z" fill="currentColor"/>
+        <path d="M47.4726 39.447C49.7433 39.4347 139.258 40.0575 142.274 40.1137L142.274 40.119L174.894 39.9664C178.205 39.9509 180.901 42.6243 180.916 45.9376L181.04 81.4963C181.05 84.368 179.922 87.1264 177.902 89.1665L154.118 113.196C152.945 114.382 151.35 115.053 149.682 115.064L142.625 115.11C142.625 115.11 48.4847 114.399 45.7894 114.41L25.7911 114.479L25.8494 133.745C25.8579 136.544 23.7627 138.821 21.166 138.834L5.44005 138.913C2.84027 138.926 0.721101 136.666 0.705987 133.864L0.662595 125.745C0.626344 119.723 -0.140241 115.641 4.33464 110.83C8.36775 106.888 12.3208 102.8 16.3462 98.8405C18.8012 96.4638 21.0725 93.8345 23.8095 91.7742C27.2306 89.1997 31.9145 89.5864 35.982 89.5732L44.9135 89.5461C47.4811 89.5391 142.509 90.2769 142.509 90.2769L142.509 90.2667L150.846 90.2277C153.859 90.2136 156.291 87.7573 156.277 84.7413L156.209 70.3585C156.195 67.3425 153.741 64.909 150.728 64.9231L142.39 64.9621L142.39 64.982C138.888 64.8318 47.2381 64.3891 44.4437 64.3413C40.2638 64.494 36.0101 64.1761 31.8378 64.4134C25.0384 64.8001 25.5103 70.3713 25.5671 75.1657L25.6531 82.4393C25.6702 84.0586 25.81 85.8583 25.0306 87.3412C24.4984 88.3542 23.6178 89.0188 22.5271 89.3403C20.7888 89.8522 7.17505 89.9189 4.94736 89.6862C4.16675 89.6049 3.35915 89.4095 2.67091 89.0216C1.69389 88.4726 0.983544 87.6558 0.705202 86.5572C0.357024 85.1837 0.245968 70.673 0.431689 68.952C0.511888 68.2091 0.718178 67.5011 1.12654 66.8679C1.70383 65.9727 2.59464 65.3751 3.60778 65.0771C5.02964 64.6589 6.63995 64.7846 8.10926 64.7827C11.4616 64.7781 17.8335 65.141 20.8875 64.497C26.6731 63.277 26.2987 58.286 26.2554 53.6293L26.1838 46.0194C26.1457 41.5168 27.0954 40.2324 31.7877 39.5929C32.3006 39.5228 33.4546 39.5069 34.0063 39.5011L47.4726 39.447Z" fill="currentColor"/>
+        <path d="M200.066 0.092345L202.012 6.35414C203.668 11.6826 207.864 15.8396 213.207 17.4452L219.487 19.332L213.225 21.2775C207.897 22.9331 203.74 27.1291 202.134 32.4729L200.247 38.7526L198.302 32.4908C196.646 27.1623 192.45 23.0053 187.107 21.3997L180.827 19.5129L187.089 17.5674C192.417 15.9119 196.574 11.7158 198.18 6.37208L200.066 0.092345Z" fill="currentColor"/>
+      </svg>
+    </a>
+    <div class="nav__links">
+      <a href="industries.html" class="nav__link">Industries</a>
+      <a href="contact.html" class="nav__link" aria-current="page">Contact</a>
+      <a href="#cfo-form" class="btn-primary" id="nav-cta">Book a Demo →</a>
+      <label class="nav-grid-debug">
+        <input type="checkbox" id="grid-debug-toggle" class="nav-grid-debug__input" aria-label="Show 12-column layout grid (temporary)">
+        <span class="nav-grid-debug__switch" aria-hidden="true"></span>
+        <span class="nav-grid-debug__text">Grid</span>
+      </label>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────────────── -->
+<section class="contact-hero reveal" id="hero">
+  <div class="contact-hero__inner">
+    <div class="sec__label">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">Contact</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">RVRN · DIRECT</span>
+    </div>
+    <div class="contact-hero__row">
+      <h1 class="type-h1 contact-hero__heading">Contact<br>Us</h1>
+      <div>
+        <div class="contact-hero__paths" role="list">
+          <a href="#cfo-form" class="contact-hero__path" role="listitem">
+            <span class="type-terms contact-hero__path-label">Book a Demo — CFO path</span>
+            <span class="contact-hero__path-arrow">→</span>
+          </a>
+          <a href="#revops-form" class="contact-hero__path" role="listitem">
+            <span class="type-terms contact-hero__path-label">Talk to Our Team — RevOps path</span>
+            <span class="contact-hero__path-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="contact-hero__email-row">
+      <p class="type-body contact-hero__email">Email us at <a href="mailto:sales@revorion.ai" style="color:var(--ink);text-decoration:underline;text-underline-offset:3px">sales@revorion.ai</a>. You'll be surprised at how fast our sales team responds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FORMS ─────────────────────────────────────────── -->
+<section class="forms-section reveal" id="forms">
+  <div class="forms-grid">
+
+    <!-- CFO path -->
+    <div class="form-col" id="cfo-form">
+      <p class="type-terms form-col__path-label">Book a Demo</p>
+      <h2 class="type-stat form-col__heading">CFO path</h2>
+      <p class="type-body form-col__body">For finance leaders who want to understand exposure before committing to an engagement. We review your contract structure, estimate leakage range, and show you what the platform surfaces.</p>
+      <form class="form" name="cfo-demo" method="POST" novalidate>
+        <div class="field">
+          <label class="field__label" for="cfo-name">Full Name</label>
+          <input class="field__input" id="cfo-name" type="text" name="name" placeholder="Jane Doe" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="cfo-title">Job Title</label>
+          <input class="field__input" id="cfo-title" type="text" name="title" placeholder="CFO" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="cfo-company">Company</label>
+          <input class="field__input" id="cfo-company" type="text" name="company" placeholder="Acme Corp" autocomplete="organization" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="cfo-email">Work Email</label>
+          <input class="field__input" id="cfo-email" type="email" name="email" placeholder="jane@acmecorp.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="cfo-arr">Estimated Annual Revenue</label>
+          <select class="field__select field__input" id="cfo-arr" name="arr">
+            <option value="" disabled selected>Select ARR range</option>
+            <option value="<10m">Under $10M</option>
+            <option value="10-50m">$10M – $50M</option>
+            <option value="50-250m">$50M – $250M</option>
+            <option value="250-1b">$250M – $1B</option>
+            <option value=">1b">Over $1B</option>
+          </select>
+        </div>
+        <div class="form__submit">
+          <button type="submit" class="btn-primary">REQUEST DEMO →</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- RevOps path -->
+    <div class="form-col" id="revops-form">
+      <p class="type-terms form-col__path-label">Talk to Our Team</p>
+      <h2 class="type-stat form-col__heading">RevOps path</h2>
+      <p class="type-body form-col__body">For billing operations, revenue operations, and finance teams who have a specific problem and want to talk through it. Tell us what you're dealing with.</p>
+      <form class="form" name="revops-contact" method="POST" novalidate>
+        <div class="field">
+          <label class="field__label" for="ro-name">Full Name</label>
+          <input class="field__input" id="ro-name" type="text" name="name" placeholder="John Smith" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="ro-company">Company</label>
+          <input class="field__input" id="ro-company" type="text" name="company" placeholder="Acme Corp" autocomplete="organization" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="ro-email">Work Email</label>
+          <input class="field__input" id="ro-email" type="email" name="email" placeholder="john@acmecorp.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="ro-message">What are you dealing with?</label>
+          <textarea class="field__textarea" id="ro-message" name="message" placeholder="Describe the billing problem, contract type, or question you have. The more specific, the better." required></textarea>
+        </div>
+        <div class="form__submit">
+          <button type="submit" class="btn-secondary">SEND MESSAGE →</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── TRUST SIGNALS ────────────────────────────────── -->
+<section class="trust reveal" id="trust">
+  <div class="trust__inner">
+    <div class="trust__grid" role="list">
+      <div class="trust__item" role="listitem">
+        <span class="type-terms trust__tag">No pitch decks</span>
+        <p class="type-body trust__body">Every session is a working conversation, not a slide tour.</p>
+      </div>
+      <div class="trust__item" role="listitem">
+        <span class="type-terms trust__tag">NDA on request</span>
+        <p class="type-body trust__body">Available before any substantive discussion.</p>
+      </div>
+      <div class="trust__item" role="listitem">
+        <span class="type-terms trust__tag">Response within 1 business day</span>
+        <p class="type-body trust__body">Direct from the team. No SDR handoffs.</p>
+      </div>
+      <div class="trust__item" role="listitem">
+        <span class="type-terms trust__tag">No lock-in to start</span>
+        <p class="type-body trust__body">Exposure assessment before any commercial commitment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ───────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <svg width="221" height="141" viewBox="0 0 221 141" fill="none" xmlns="http://www.w3.org/2000/svg" class="footer__logo-svg" aria-label="Revorion">
+          <path d="M155.937 119.006C155.924 116.204 158.184 113.922 160.985 113.909L176.197 113.838C178.998 113.825 181.279 116.085 181.292 118.887L181.363 134.108C181.376 136.91 179.117 139.192 176.316 139.205L161.103 139.276C158.303 139.289 156.022 137.028 156.009 134.226L155.937 119.006Z" fill="currentColor"/>
+          <path d="M47.4726 39.447C49.7433 39.4347 139.258 40.0575 142.274 40.1137L142.274 40.119L174.894 39.9664C178.205 39.9509 180.901 42.6243 180.916 45.9376L181.04 81.4963C181.05 84.368 179.922 87.1264 177.902 89.1665L154.118 113.196C152.945 114.382 151.35 115.053 149.682 115.064L142.625 115.11C142.625 115.11 48.4847 114.399 45.7894 114.41L25.7911 114.479L25.8494 133.745C25.8579 136.544 23.7627 138.821 21.166 138.834L5.44005 138.913C2.84027 138.926 0.721101 136.666 0.705987 133.864L0.662595 125.745C0.626344 119.723 -0.140241 115.641 4.33464 110.83C8.36775 106.888 12.3208 102.8 16.3462 98.8405C18.8012 96.4638 21.0725 93.8345 23.8095 91.7742C27.2306 89.1997 31.9145 89.5864 35.982 89.5732L44.9135 89.5461C47.4811 89.5391 142.509 90.2769 142.509 90.2769L142.509 90.2667L150.846 90.2277C153.859 90.2136 156.291 87.7573 156.277 84.7413L156.209 70.3585C156.195 67.3425 153.741 64.909 150.728 64.9231L142.39 64.9621L142.39 64.982C138.888 64.8318 47.2381 64.3891 44.4437 64.3413C40.2638 64.494 36.0101 64.1761 31.8378 64.4134C25.0384 64.8001 25.5103 70.3713 25.5671 75.1657L25.6531 82.4393C25.6702 84.0586 25.81 85.8583 25.0306 87.3412C24.4984 88.3542 23.6178 89.0188 22.5271 89.3403C20.7888 89.8522 7.17505 89.9189 4.94736 89.6862C4.16675 89.6049 3.35915 89.4095 2.67091 89.0216C1.69389 88.4726 0.983544 87.6558 0.705202 86.5572C0.357024 85.1837 0.245968 70.673 0.431689 68.952C0.511888 68.2091 0.718178 67.5011 1.12654 66.8679C1.70383 65.9727 2.59464 65.3751 3.60778 65.0771C5.02964 64.6589 6.63995 64.7846 8.10926 64.7827C11.4616 64.7781 17.8335 65.141 20.8875 64.497C26.6731 63.277 26.2987 58.286 26.2554 53.6293L26.1838 46.0194C26.1457 41.5168 27.0954 40.2324 31.7877 39.5929C32.3006 39.5228 33.4546 39.5069 34.0063 39.5011L47.4726 39.447Z" fill="currentColor"/>
+          <path d="M200.066 0.092345L202.012 6.35414C203.668 11.6826 207.864 15.8396 213.207 17.4452L219.487 19.332L213.225 21.2775C207.897 22.9331 203.74 27.1291 202.134 32.4729L200.247 38.7526L198.302 32.4908C196.646 27.1623 192.45 23.0053 187.107 21.3997L180.827 19.5129L187.089 17.5674C192.417 15.9119 196.574 11.7158 198.18 6.37208L200.066 0.092345Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="footer__col">
+        <span class="type-terms footer__col-head">Product</span>
+        <a href="index.html#process" class="footer__link">How It Works</a>
+        <a href="index.html#use-cases" class="footer__link">Use Cases</a>
+        <a href="index.html#product" class="footer__link">Integrations</a>
+        <a href="index.html#enterprise" class="footer__link">Enterprise</a>
+      </div>
+      <div class="footer__col">
+        <span class="type-terms footer__col-head">Industries</span>
+        <a href="industries.html#tier1" class="footer__link">Logistics</a>
+        <a href="industries.html#tier1" class="footer__link">SaaS</a>
+        <a href="industries.html#tier1" class="footer__link">Healthcare</a>
+        <a href="industries.html#tier1" class="footer__link">Insurance</a>
+        <a href="industries.html#tier1" class="footer__link">AdTech</a>
+        <a href="industries.html#tier1" class="footer__link">Legal</a>
+      </div>
+      <div class="footer__col">
+        <span class="type-terms footer__col-head">Company</span>
+        <a href="#" class="footer__link">About</a>
+        <a href="contact.html" class="footer__link">Contact</a>
+        <a href="#" class="footer__link">Careers</a>
+      </div>
+      <div class="footer__col">
+        <span class="type-terms footer__col-head">Legal</span>
+        <a href="#" class="footer__link">Privacy Policy</a>
+        <a href="#" class="footer__link">Terms of Service</a>
+        <a href="#" class="footer__link">Security</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="type-terms">© 2026 Revorion Inc. All rights reserved.</span>
+      <span class="type-terms">Revorion.ai</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Cursor — dot + ring same position (no lag) ── */
+const cursorDot     = document.getElementById('cursor-dot');
+const cursorOutline = document.getElementById('cursor-outline');
+const mouse = { x:0, y:0 };
+window.addEventListener('mousemove', e => {
+  mouse.x = e.clientX; mouse.y = e.clientY;
+  const x = e.clientX + 'px';
+  const y = e.clientY + 'px';
+  if(cursorDot){ cursorDot.style.left = x; cursorDot.style.top = y; }
+  if(cursorOutline){ cursorOutline.style.left = x; cursorOutline.style.top = y; }
+});
+
+/* ── Reveal ── */
+const ro = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }), { threshold:0.07 });
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+/* ── Path anchors scroll to form ── */
+document.querySelectorAll('.contact-hero__path').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if(target) target.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+});
+
+/* ── Form submit (placeholder handler) ── */
+document.querySelectorAll('.form').forEach(form => {
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = form.querySelector('[type="submit"]');
+    const orig = btn.textContent;
+    btn.textContent = 'SENT ✓';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+  });
+});
+</script>
+
+<!-- TEMP: remove before launch — 12-col overlay matches .container gutters + 1312px band -->
+<div id="grid-debug-overlay" class="grid-debug-overlay" aria-hidden="true">
+  <div class="grid-debug-overlay__inner">
+    <span class="grid-debug-overlay__col" data-col="1"></span>
+    <span class="grid-debug-overlay__col" data-col="2"></span>
+    <span class="grid-debug-overlay__col" data-col="3"></span>
+    <span class="grid-debug-overlay__col" data-col="4"></span>
+    <span class="grid-debug-overlay__col" data-col="5"></span>
+    <span class="grid-debug-overlay__col" data-col="6"></span>
+    <span class="grid-debug-overlay__col" data-col="7"></span>
+    <span class="grid-debug-overlay__col" data-col="8"></span>
+    <span class="grid-debug-overlay__col" data-col="9"></span>
+    <span class="grid-debug-overlay__col" data-col="10"></span>
+    <span class="grid-debug-overlay__col" data-col="11"></span>
+    <span class="grid-debug-overlay__col" data-col="12"></span>
+  </div>
+  <p class="grid-debug-overlay__legend">12 columns · max 1312px · var(--page-padding-inline) · var(--grid-gutter)</p>
+</div>
+
+</body>
+</html>

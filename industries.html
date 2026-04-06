@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Industries — Revorion</title>
+  <meta name="description" content="Every operational environment has structural revenue gaps. Explore the Revorion industries index to see exactly where profit margins are leaking in your specific sector.">
+  <meta property="og:title" content="Industries — Revorion">
+  <meta property="og:description" content="Revenue leakage by industry. Find where your sector loses margin.">
+  <meta property="og:type" content="website">
+  <meta name="robots" content="index, follow">
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/globals.css">
+  <style>
+    /* ── Page-specific styles ── */
+
+    /* Hero */
+    .ind-hero {
+      background: var(--chalk);
+      border-bottom: var(--border-width) solid var(--rule);
+      padding: 72px 0 0;
+    }
+    .ind-hero__inner {
+      padding-inline: var(--page-padding-inline);
+    }
+    .ind-hero__heading {
+      margin: 56px 0 48px;
+    }
+    .ind-hero__sub-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+      border-top: var(--border-width) solid var(--rule);
+      padding: 36px 0;
+    }
+    .ind-hero__body {
+      max-width: 560px;
+      color: var(--moss);
+    }
+
+    /* Tier 1 — accordion-style rows */
+    .tier1__row {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: 40px;
+      align-items: center;
+      padding: 36px 0;
+      border-bottom: var(--border-width) solid var(--rule);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .tier1__row:first-child { border-top: var(--border-width) solid var(--rule); }
+    .tier1__row:hover { background: var(--ink-04); }
+
+    .tier1__num { color: var(--ash); }
+    .tier1__name { color: var(--ink); }
+    .tier1__meta {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .tier1__risk { color: var(--ash); }
+    .tier1__cta { color: var(--ink); }
+
+    .tier1__expanded {
+      display: none;
+      padding: 0 0 36px 104px;
+      border-bottom: var(--border-width) solid var(--rule);
+      margin-top: calc(-1 * var(--border-width));
+      background: var(--ink-04);
+    }
+    .tier1__expanded.open { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .tier1__exp-label { color: var(--ash); margin-bottom: 8px; }
+    .tier1__exp-body  { color: var(--ink); }
+
+    /* Tier 2 — 2x2 sector cards */
+    .tier2__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      background: var(--ink);
+    }
+    .tier2__card {
+      background: var(--chalk);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 320px;
+      border: var(--border-width) solid var(--rule);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .tier2__card:hover { background: #EBEBEB; }
+    .tier2__card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tier2__card-label { color: var(--ash); }
+    .tier2__card-arrow {
+      width: 36px;
+      height: 36px;
+      border: var(--border-width) solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: var(--type-mono-ui-size);
+      letter-spacing: var(--type-mono-ui-tracking);
+      text-transform: uppercase;
+      color: var(--ink);
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tier2__card:hover .tier2__card-arrow {
+      background: var(--ink);
+      color: var(--chalk);
+    }
+    .tier2__card-name { color: var(--ink); }
+    .tier2__card-desc { color: var(--moss); margin-top: 8px; }
+
+    /* Risk Matrix */
+    .matrix__row {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 0;
+      border-bottom: var(--border-width) solid var(--rule);
+    }
+    .matrix__cell-left {
+      padding: 48px 40px 48px 0;
+      border-right: var(--border-width) solid var(--rule);
+    }
+    .matrix__cell-right {
+      padding: 48px 0 48px 40px;
+    }
+    .matrix__risk-label { margin-bottom: 4px; }
+    .matrix__risk-stat  { margin-bottom: 0; }
+    .matrix__items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-content: flex-start;
+    }
+    .matrix__tag {
+      font-family: var(--font-mono);
+      font-size: var(--type-mono-ui-size);
+      letter-spacing: var(--type-mono-ui-tracking);
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border: var(--border-width) solid var(--rule);
+    }
+    .matrix__row--dark {
+      border-bottom-color: var(--rule-on-ink);
+    }
+    .matrix__row--dark .matrix__cell-left {
+      border-right-color: var(--rule-on-ink);
+    }
+    .matrix__row--dark .matrix__tag {
+      border-color: var(--rule-on-ink);
+      color: var(--chalk-45);
+    }
+    .matrix__row--light .matrix__tag { color: var(--moss); }
+
+    @media (max-width: 900px) {
+      .matrix__row { grid-template-columns: 1fr; }
+      .matrix__cell-left  { border-right: none; padding-bottom: 24px; }
+      .matrix__cell-right { padding-top: 0; padding-left: 0; }
+    }
+    @media (max-width: 768px) {
+      .tier1__row { grid-template-columns: 40px 1fr; }
+      .tier1__meta { display: none; }
+      .tier2__grid { grid-template-columns: 1fr; }
+      .ind-hero__sub-row { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-outline" aria-hidden="true"></div>
+
+<!-- ─── NAV ─────────────────────────────────────────── -->
+<nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo" aria-label="Revorion homepage">
+      <svg width="221" height="141" viewBox="0 0 221 141" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M155.937 119.006C155.924 116.204 158.184 113.922 160.985 113.909L176.197 113.838C178.998 113.825 181.279 116.085 181.292 118.887L181.363 134.108C181.376 136.91 179.117 139.192 176.316 139.205L161.103 139.276C158.303 139.289 156.022 137.028 156.009 134.226L155.937 119.006Z" fill="currentColor"/>
+        <path d="M47.4726 39.447C49.7433 39.4347 139.258 40.0575 142.274 40.1137L142.274 40.119L174.894 39.9664C178.205 39.9509 180.901 42.6243 180.916 45.9376L181.04 81.4963C181.05 84.368 179.922 87.1264 177.902 89.1665L154.118 113.196C152.945 114.382 151.35 115.053 149.682 115.064L142.625 115.11C142.625 115.11 48.4847 114.399 45.7894 114.41L25.7911 114.479L25.8494 133.745C25.8579 136.544 23.7627 138.821 21.166 138.834L5.44005 138.913C2.84027 138.926 0.721101 136.666 0.705987 133.864L0.662595 125.745C0.626344 119.723 -0.140241 115.641 4.33464 110.83C8.36775 106.888 12.3208 102.8 16.3462 98.8405C18.8012 96.4638 21.0725 93.8345 23.8095 91.7742C27.2306 89.1997 31.9145 89.5864 35.982 89.5732L44.9135 89.5461C47.4811 89.5391 142.509 90.2769 142.509 90.2769L142.509 90.2667L150.846 90.2277C153.859 90.2136 156.291 87.7573 156.277 84.7413L156.209 70.3585C156.195 67.3425 153.741 64.909 150.728 64.9231L142.39 64.9621L142.39 64.982C138.888 64.8318 47.2381 64.3891 44.4437 64.3413C40.2638 64.494 36.0101 64.1761 31.8378 64.4134C25.0384 64.8001 25.5103 70.3713 25.5671 75.1657L25.6531 82.4393C25.6702 84.0586 25.81 85.8583 25.0306 87.3412C24.4984 88.3542 23.6178 89.0188 22.5271 89.3403C20.7888 89.8522 7.17505 89.9189 4.94736 89.6862C4.16675 89.6049 3.35915 89.4095 2.67091 89.0216C1.69389 88.4726 0.983544 87.6558 0.705202 86.5572C0.357024 85.1837 0.245968 70.673 0.431689 68.952C0.511888 68.2091 0.718178 67.5011 1.12654 66.8679C1.70383 65.9727 2.59464 65.3751 3.60778 65.0771C5.02964 64.6589 6.63995 64.7846 8.10926 64.7827C11.4616 64.7781 17.8335 65.141 20.8875 64.497C26.6731 63.277 26.2987 58.286 26.2554 53.6293L26.1838 46.0194C26.1457 41.5168 27.0954 40.2324 31.7877 39.5929C32.3006 39.5228 33.4546 39.5069 34.0063 39.5011L47.4726 39.447Z" fill="currentColor"/>
+        <path d="M200.066 0.092345L202.012 6.35414C203.668 11.6826 207.864 15.8396 213.207 17.4452L219.487 19.332L213.225 21.2775C207.897 22.9331 203.74 27.1291 202.134 32.4729L200.247 38.7526L198.302 32.4908C196.646 27.1623 192.45 23.0053 187.107 21.3997L180.827 19.5129L187.089 17.5674C192.417 15.9119 196.574 11.7158 198.18 6.37208L200.066 0.092345Z" fill="currentColor"/>
+      </svg>
+    </a>
+    <div class="nav__links">
+      <a href="industries.html" class="nav__link" aria-current="page">Industries</a>
+      <a href="contact.html" class="nav__link">Contact</a>
+      <a href="contact.html" class="btn-primary" id="nav-cta">Book a Demo →</a>
+      <label class="nav-grid-debug">
+        <input type="checkbox" id="grid-debug-toggle" class="nav-grid-debug__input" aria-label="Show 12-column layout grid (temporary)">
+        <span class="nav-grid-debug__switch" aria-hidden="true"></span>
+        <span class="nav-grid-debug__text">Grid</span>
+      </label>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────────────── -->
+<section class="ind-hero reveal" id="hero">
+  <div class="ind-hero__inner">
+    <div class="sec__label">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">Industries Directory</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">DIR · INDEX</span>
+    </div>
+    <h1 class="type-h1 ind-hero__heading">Revenue leakage<br>by industry</h1>
+    <div class="ind-hero__sub-row">
+      <p class="type-body ind-hero__body">Every operational environment has structural revenue gaps. Explore our index to see exactly where profit margins are leaking in your specific sector.</p>
+      <a href="#matrix" class="btn-secondary">EXPLORE MATRIX ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TIER 1 — CORE VERTICALS ──────────────────────── -->
+<section class="sec sec--chalk reveal" id="tier1">
+  <div class="container">
+    <div class="sec__label">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">Tier 1 — Core Verticals</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">TIER · 01–04</span>
+    </div>
+
+    <div class="tier1__list">
+
+      <div class="tier1__row" data-row="0" role="button" aria-expanded="false" tabindex="0">
+        <span class="type-terms tier1__num">01</span>
+        <p class="type-stat tier1__name">Healthcare</p>
+        <div class="tier1__meta">
+          <span class="type-terms tier1__risk">5–15% risk</span>
+          <span class="type-terms tier1__cta">EXPLORE SECTOR →</span>
+        </div>
+      </div>
+      <div class="tier1__expanded" id="exp-0">
+        <div>
+          <p class="type-terms tier1__exp-label">Sub-industries</p>
+          <p class="type-body tier1__exp-body">Hospitals &amp; health systems, medical billing &amp; coding, specialty pharmaceuticals, health insurance</p>
+        </div>
+        <div>
+          <p class="type-terms tier1__exp-label">Leakage Vectors</p>
+          <p class="type-body tier1__exp-body">Undercoded procedures · Payer contract rate misapplication · Denial write-offs · Charge capture failures</p>
+        </div>
+      </div>
+
+      <div class="tier1__row" data-row="1" role="button" aria-expanded="false" tabindex="0">
+        <span class="type-terms tier1__num">02</span>
+        <p class="type-stat tier1__name">Logistics</p>
+        <div class="tier1__meta">
+          <span class="type-terms tier1__risk">3–8% risk</span>
+          <span class="type-terms tier1__cta">EXPLORE SECTOR →</span>
+        </div>
+      </div>
+      <div class="tier1__expanded" id="exp-1">
+        <div>
+          <p class="type-terms tier1__exp-label">Sub-industries</p>
+          <p class="type-body tier1__exp-body">Freight, last-mile, warehousing/3PL</p>
+        </div>
+        <div>
+          <p class="type-terms tier1__exp-label">Leakage Vectors</p>
+          <p class="type-body tier1__exp-body">Unbilled surcharges · Contract rate misapplication · Weight misclassification</p>
+        </div>
+      </div>
+
+      <div class="tier1__row" data-row="2" role="button" aria-expanded="false" tabindex="0">
+        <span class="type-terms tier1__num">03</span>
+        <p class="type-stat tier1__name">Enterprise SaaS</p>
+        <div class="tier1__meta">
+          <span class="type-terms tier1__risk">3–8% risk</span>
+          <span class="type-terms tier1__cta">EXPLORE SECTOR →</span>
+        </div>
+      </div>
+      <div class="tier1__expanded" id="exp-2">
+        <div>
+          <p class="type-terms tier1__exp-label">Sub-industries</p>
+          <p class="type-body tier1__exp-body">Cloud infrastructure, subscription software, usage-based billing platforms</p>
+        </div>
+        <div>
+          <p class="type-terms tier1__exp-label">Leakage Vectors</p>
+          <p class="type-body tier1__exp-body">Missed escalators · Seat overage not billed · Discount override without approval · Churn credit abuse</p>
+        </div>
+      </div>
+
+      <div class="tier1__row" data-row="3" role="button" aria-expanded="false" tabindex="0">
+        <span class="type-terms tier1__num">04</span>
+        <p class="type-stat tier1__name">Insurance</p>
+        <div class="tier1__meta">
+          <span class="type-terms tier1__risk">3–8% risk</span>
+          <span class="type-terms tier1__cta">EXPLORE SECTOR →</span>
+        </div>
+      </div>
+      <div class="tier1__expanded" id="exp-3">
+        <div>
+          <p class="type-terms tier1__exp-label">Sub-industries</p>
+          <p class="type-body tier1__exp-body">P&amp;C carriers, health insurance, specialty lines, reinsurance</p>
+        </div>
+        <div>
+          <p class="type-terms tier1__exp-label">Leakage Vectors</p>
+          <p class="type-body tier1__exp-body">Premium audit gaps · Reinsurance recoverable errors · Claim overpayment · Policy endorsement billing failures</p>
+        </div>
+      </div>
+
+      <div class="tier1__row" data-row="4" role="button" aria-expanded="false" tabindex="0">
+        <span class="type-terms tier1__num">05</span>
+        <p class="type-stat tier1__name">AdTech</p>
+        <div class="tier1__meta">
+          <span class="type-terms tier1__risk">1–5% risk</span>
+          <span class="type-terms tier1__cta">EXPLORE SECTOR →</span>
+        </div>
+      </div>
+      <div class="tier1__expanded" id="exp-4">
+        <div>
+          <p class="type-terms tier1__exp-label">Sub-industries</p>
+          <p class="type-body tier1__exp-body">Programmatic, DSPs, SSPs, digital agencies, attribution platforms</p>
+        </div>
+        <div>
+          <p class="type-terms tier1__exp-label">Leakage Vectors</p>
+          <p class="type-body tier1__exp-body">Impression reconciliation gaps · Make-good undertracking · Agency fee misapplication · Contract CPM drift</p>
+        </div>
+      </div>
+
+      <div class="tier1__row" data-row="5" role="button" aria-expanded="false" tabindex="0">
+        <span class="type-terms tier1__num">06</span>
+        <p class="type-stat tier1__name">Legal</p>
+        <div class="tier1__meta">
+          <span class="type-terms tier1__risk">3–8% risk</span>
+          <span class="type-terms tier1__cta">EXPLORE SECTOR →</span>
+        </div>
+      </div>
+      <div class="tier1__expanded" id="exp-5">
+        <div>
+          <p class="type-terms tier1__exp-label">Sub-industries</p>
+          <p class="type-body tier1__exp-body">Big Law, boutique firms, legal process outsourcing, court reporting</p>
+        </div>
+        <div>
+          <p class="type-terms tier1__exp-label">Leakage Vectors</p>
+          <p class="type-body tier1__exp-body">Unbilled time entries · Write-down rate drift · Retainer reconciliation failures · Matter budget overruns uncharged</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── TIER 2 — SECTOR OVERVIEWS ───────────────────── -->
+<section class="sec sec--chalk reveal" id="tier2">
+  <div class="container">
+    <div class="sec__label">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">Tier 2 — Sector Overviews</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">SECTOR · DEEP</span>
+    </div>
+    <div class="tier2__grid">
+
+      <div class="tier2__card">
+        <div class="tier2__card-top">
+          <span class="type-terms tier2__card-label">Sector 01</span>
+          <div class="tier2__card-arrow" aria-hidden="true">↗</div>
+        </div>
+        <div>
+          <p class="type-stat tier2__card-name">Financial Services</p>
+          <p class="type-body tier2__card-desc">Banks, asset managers, credit cards, payments</p>
+        </div>
+      </div>
+
+      <div class="tier2__card">
+        <div class="tier2__card-top">
+          <span class="type-terms tier2__card-label">Sector 02</span>
+          <div class="tier2__card-arrow" aria-hidden="true">↗</div>
+        </div>
+        <div>
+          <p class="type-stat tier2__card-name">Energy &amp; Utilities</p>
+          <p class="type-body tier2__card-desc">Electricity, oil &amp; gas, renewables, water</p>
+        </div>
+      </div>
+
+      <div class="tier2__card">
+        <div class="tier2__card-top">
+          <span class="type-terms tier2__card-label">Sector 03</span>
+          <div class="tier2__card-arrow" aria-hidden="true">↗</div>
+        </div>
+        <div>
+          <p class="type-stat tier2__card-name">Manufacturing</p>
+          <p class="type-body tier2__card-desc">OEMs, contract manufacturing, construction, engineering</p>
+        </div>
+      </div>
+
+      <div class="tier2__card">
+        <div class="tier2__card-top">
+          <span class="type-terms tier2__card-label">Sector 04</span>
+          <div class="tier2__card-arrow" aria-hidden="true">↗</div>
+        </div>
+        <div>
+          <p class="type-stat tier2__card-name">Telecom &amp; Media</p>
+          <p class="type-body tier2__card-desc">Carriers, ISPs, subscription media, marketplaces</p>
+        </div>
+      </div>
+
+    </div>
+    <div style="margin-top:24px">
+      <a href="#matrix" class="btn-ghost">All industries data →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── RISK MATRIX ──────────────────────────────────── -->
+<section class="sec sec--chalk reveal" id="matrix">
+  <div class="container">
+    <div class="sec__label">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">All Industries Data</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">MATRIX · RISK</span>
+    </div>
+    <h2 class="type-h1" style="margin-bottom:56px">Risk Matrix</h2>
+
+    <!-- Row 1 — Critical (dark) -->
+    <div class="matrix__row matrix__row--dark" style="background:var(--ink)">
+      <div class="matrix__cell-left">
+        <p class="type-stat matrix__risk-label" style="color:var(--chalk)">Critical Risk</p>
+        <p class="type-terms" style="color:var(--chalk-45);margin-top:8px">Avg. Leakage</p>
+        <p class="type-h2 matrix__risk-stat" style="color:var(--chalk);margin-top:4px">5–15%</p>
+      </div>
+      <div class="matrix__cell-right">
+        <div class="matrix__items">
+          <span class="matrix__tag">Hospitals &amp; health systems</span>
+          <span class="matrix__tag">Telecom carriers</span>
+          <span class="matrix__tag">SaaS / cloud software</span>
+          <span class="matrix__tag">Health insurance</span>
+          <span class="matrix__tag">Medical billing &amp; coding</span>
+          <span class="matrix__tag">Specialty pharmaceuticals</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2 — High (light) -->
+    <div class="matrix__row matrix__row--light" style="background:var(--chalk)">
+      <div class="matrix__cell-left">
+        <p class="type-stat matrix__risk-label" style="color:var(--ink)">High Risk</p>
+        <p class="type-terms" style="color:var(--ash);margin-top:8px">Avg. Leakage</p>
+        <p class="type-h2 matrix__risk-stat" style="color:var(--ink);margin-top:4px">3–8%</p>
+      </div>
+      <div class="matrix__cell-right">
+        <div class="matrix__items">
+          <span class="matrix__tag">Management consulting</span>
+          <span class="matrix__tag">Legal services</span>
+          <span class="matrix__tag">IT managed services</span>
+          <span class="matrix__tag">Insurance (P&amp;C)</span>
+          <span class="matrix__tag">Freight &amp; logistics</span>
+          <span class="matrix__tag">Engineering &amp; construction</span>
+          <span class="matrix__tag">Accounting &amp; audit firms</span>
+          <span class="matrix__tag">Subscription media</span>
+          <span class="matrix__tag">Oil &amp; gas midstream</span>
+          <span class="matrix__tag">Utilities</span>
+          <span class="matrix__tag">Commercial real estate</span>
+          <span class="matrix__tag">Government contractors</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3 — Medium (dark) -->
+    <div class="matrix__row matrix__row--dark" style="background:var(--ink)">
+      <div class="matrix__cell-left">
+        <p class="type-stat matrix__risk-label" style="color:var(--chalk)">Medium Risk</p>
+        <p class="type-terms" style="color:var(--chalk-45);margin-top:8px">Avg. Leakage</p>
+        <p class="type-h2 matrix__risk-stat" style="color:var(--chalk);margin-top:4px">1–5%</p>
+      </div>
+      <div class="matrix__cell-right">
+        <div class="matrix__items">
+          <span class="matrix__tag">E-commerce / retail</span>
+          <span class="matrix__tag">Hotels &amp; hospitality</span>
+          <span class="matrix__tag">Airlines</span>
+          <span class="matrix__tag">Commercial banking</span>
+          <span class="matrix__tag">Digital advertising</span>
+          <span class="matrix__tag">Investment management</span>
+          <span class="matrix__tag">Car rental</span>
+          <span class="matrix__tag">Staffing &amp; recruitment</span>
+          <span class="matrix__tag">Food &amp; beverage distribution</span>
+          <span class="matrix__tag">Equipment leasing</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── GET STARTED ──────────────────────────────────── -->
+<section class="sec sec--ink" id="get-started">
+  <div class="container">
+    <div class="sec__label sec__label--inv">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">Get Started</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">NEXT · BOOK</span>
+    </div>
+    <h2 class="type-h1 cta__heading">Revenue leakage compounds. So does recovery.</h2>
+    <p class="type-body-lg cta__sub">Find the revenue your systems are missing.</p>
+    <p class="type-terms cta__note">A 3% leakage rate at $50M ARR is $125K lost every month you wait.</p>
+    <div class="cta__actions">
+      <a href="contact.html" class="btn-primary-light">Book a Demo →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ───────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <svg width="221" height="141" viewBox="0 0 221 141" fill="none" xmlns="http://www.w3.org/2000/svg" class="footer__logo-svg" aria-label="Revorion">
+          <path d="M155.937 119.006C155.924 116.204 158.184 113.922 160.985 113.909L176.197 113.838C178.998 113.825 181.279 116.085 181.292 118.887L181.363 134.108C181.376 136.91 179.117 139.192 176.316 139.205L161.103 139.276C158.303 139.289 156.022 137.028 156.009 134.226L155.937 119.006Z" fill="currentColor"/>
+          <path d="M47.4726 39.447C49.7433 39.4347 139.258 40.0575 142.274 40.1137L142.274 40.119L174.894 39.9664C178.205 39.9509 180.901 42.6243 180.916 45.9376L181.04 81.4963C181.05 84.368 179.922 87.1264 177.902 89.1665L154.118 113.196C152.945 114.382 151.35 115.053 149.682 115.064L142.625 115.11C142.625 115.11 48.4847 114.399 45.7894 114.41L25.7911 114.479L25.8494 133.745C25.8579 136.544 23.7627 138.821 21.166 138.834L5.44005 138.913C2.84027 138.926 0.721101 136.666 0.705987 133.864L0.662595 125.745C0.626344 119.723 -0.140241 115.641 4.33464 110.83C8.36775 106.888 12.3208 102.8 16.3462 98.8405C18.8012 96.4638 21.0725 93.8345 23.8095 91.7742C27.2306 89.1997 31.9145 89.5864 35.982 89.5732L44.9135 89.5461C47.4811 89.5391 142.509 90.2769 142.509 90.2769L142.509 90.2667L150.846 90.2277C153.859 90.2136 156.291 87.7573 156.277 84.7413L156.209 70.3585C156.195 67.3425 153.741 64.909 150.728 64.9231L142.39 64.9621L142.39 64.982C138.888 64.8318 47.2381 64.3891 44.4437 64.3413C40.2638 64.494 36.0101 64.1761 31.8378 64.4134C25.0384 64.8001 25.5103 70.3713 25.5671 75.1657L25.6531 82.4393C25.6702 84.0586 25.81 85.8583 25.0306 87.3412C24.4984 88.3542 23.6178 89.0188 22.5271 89.3403C20.7888 89.8522 7.17505 89.9189 4.94736 89.6862C4.16675 89.6049 3.35915 89.4095 2.67091 89.0216C1.69389 88.4726 0.983544 87.6558 0.705202 86.5572C0.357024 85.1837 0.245968 70.673 0.431689 68.952C0.511888 68.2091 0.718178 67.5011 1.12654 66.8679C1.70383 65.9727 2.59464 65.3751 3.60778 65.0771C5.02964 64.6589 6.63995 64.7846 8.10926 64.7827C11.4616 64.7781 17.8335 65.141 20.8875 64.497C26.6731 63.277 26.2987 58.286 26.2554 53.6293L26.1838 46.0194C26.1457 41.5168 27.0954 40.2324 31.7877 39.5929C32.3006 39.5228 33.4546 39.5069 34.0063 39.5011L47.4726 39.447Z" fill="currentColor"/>
+          <path d="M200.066 0.092345L202.012 6.35414C203.668 11.6826 207.864 15.8396 213.207 17.4452L219.487 19.332L213.225 21.2775C207.897 22.9331 203.74 27.1291 202.134 32.4729L200.247 38.7526L198.302 32.4908C196.646 27.1623 192.45 23.0053 187.107 21.3997L180.827 19.5129L187.089 17.5674C192.417 15.9119 196.574 11.7158 198.18 6.37208L200.066 0.092345Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="footer__col">
+        <span class="type-terms footer__col-head">Product</span>
+        <a href="index.html#process" class="footer__link">How It Works</a>
+        <a href="index.html#use-cases" class="footer__link">Use Cases</a>
+        <a href="index.html#product" class="footer__link">Integrations</a>
+        <a href="index.html#enterprise" class="footer__link">Enterprise</a>
+      </div>
+      <div class="footer__col">
+        <span class="type-terms footer__col-head">Industries</span>
+        <a href="industries.html#tier1" class="footer__link">Logistics</a>
+        <a href="industries.html#tier1" class="footer__link">SaaS</a>
+        <a href="industries.html#tier1" class="footer__link">Healthcare</a>
+        <a href="industries.html#tier1" class="footer__link">Insurance</a>
+        <a href="industries.html#tier1" class="footer__link">AdTech</a>
+        <a href="industries.html#tier1" class="footer__link">Legal</a>
+      </div>
+      <div class="footer__col">
+        <span class="type-terms footer__col-head">Company</span>
+        <a href="#" class="footer__link">About</a>
+        <a href="contact.html" class="footer__link">Contact</a>
+        <a href="#" class="footer__link">Careers</a>
+      </div>
+      <div class="footer__col">
+        <span class="type-terms footer__col-head">Legal</span>
+        <a href="#" class="footer__link">Privacy Policy</a>
+        <a href="#" class="footer__link">Terms of Service</a>
+        <a href="#" class="footer__link">Security</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="type-terms">© 2026 Revorion. All rights reserved.</span>
+      <span class="type-terms">Revorion.ai</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Cursor — dot + ring same position (no lag) ── */
+const cursorDot     = document.getElementById('cursor-dot');
+const cursorOutline = document.getElementById('cursor-outline');
+const mouse = { x:0, y:0 };
+window.addEventListener('mousemove', e => {
+  mouse.x = e.clientX; mouse.y = e.clientY;
+  const x = e.clientX + 'px';
+  const y = e.clientY + 'px';
+  if(cursorDot){ cursorDot.style.left = x; cursorDot.style.top = y; }
+  if(cursorOutline){ cursorOutline.style.left = x; cursorOutline.style.top = y; }
+});
+
+/* ── Reveal ── */
+const ro = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }), { threshold:0.07 });
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+/* ── Tier 1 accordion ── */
+document.querySelectorAll('.tier1__row').forEach(row => {
+  function toggle(){
+    const idx = row.dataset.row;
+    const panel = document.getElementById('exp-' + idx);
+    const isOpen = panel.classList.contains('open');
+    document.querySelectorAll('.tier1__expanded').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.tier1__row').forEach(r => r.setAttribute('aria-expanded','false'));
+    if(!isOpen){
+      panel.classList.add('open');
+      row.setAttribute('aria-expanded','true');
+    }
+  }
+  row.addEventListener('click', toggle);
+  row.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+});
+</script>
+
+<!-- TEMP: remove before launch — 12-col overlay matches .container gutters + 1312px band -->
+<div id="grid-debug-overlay" class="grid-debug-overlay" aria-hidden="true">
+  <div class="grid-debug-overlay__inner">
+    <span class="grid-debug-overlay__col" data-col="1"></span>
+    <span class="grid-debug-overlay__col" data-col="2"></span>
+    <span class="grid-debug-overlay__col" data-col="3"></span>
+    <span class="grid-debug-overlay__col" data-col="4"></span>
+    <span class="grid-debug-overlay__col" data-col="5"></span>
+    <span class="grid-debug-overlay__col" data-col="6"></span>
+    <span class="grid-debug-overlay__col" data-col="7"></span>
+    <span class="grid-debug-overlay__col" data-col="8"></span>
+    <span class="grid-debug-overlay__col" data-col="9"></span>
+    <span class="grid-debug-overlay__col" data-col="10"></span>
+    <span class="grid-debug-overlay__col" data-col="11"></span>
+    <span class="grid-debug-overlay__col" data-col="12"></span>
+  </div>
+  <p class="grid-debug-overlay__legend">12 columns · max 1312px · var(--page-padding-inline) · var(--grid-gutter)</p>
+</div>
+
+</body>
+</html>

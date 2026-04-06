@@ -4,1099 +4,809 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Revorion — Stop revenue leakage before it hits the ledger.</title>
+  <meta name="description" content="AI for finance teams who need revenue they can trust. Revorion detects leakage, quantifies impact, and drives recovery across your ERP, billing, and contract systems.">
+  <meta property="og:title" content="Revorion — Stop revenue leakage before it hits the ledger.">
+  <meta property="og:description" content="AI for finance teams who need revenue they can trust.">
+  <meta property="og:type" content="website">
+  <meta name="robots" content="index, follow">
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    /* ─── TOKENS ─────────────────────────────────── */
-    :root {
-      --bg:    #ecefe5;
-      --paper: #f4f3ed;
-      --ink:   #131410;
-      --muted: #5c5c5c;
-      --line:  rgba(16,17,19,0.12);
-      --hairline: #d4d7ce;
-      --accent:#ff3d04;
-      --void:  #0e0f0c;
-      --cream: #ecefe5;
-      --mono: 'JetBrains Mono','SF Mono','Menlo','Courier New',monospace;
-      --sans: 'Helvetica Now Display','Helvetica Neue',Arial,sans-serif;
-      --ease: cubic-bezier(0.16,1,0.3,1);
-      --pad: 24px;
-    }
-
-    /* ─── RESET ──────────────────────────────────── */
-    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; cursor:none; }
-    html { font-size:16px; scroll-behavior:smooth; }
-    ::selection { background:var(--ink); color:var(--cream); }
-    body {
-      background:var(--bg);
-      color:var(--ink);
-      font-family:var(--sans);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      overflow-x:hidden;
-    }
-    a { color:inherit; text-decoration:none; }
-    .inner { max-width:1600px; margin:0 auto; }
-
-    /* ─── CURSOR ─────────────────────────────────── */
-    #cursor-dot,
-    #cursor-outline {
-      position:fixed; top:0; left:0;
-      transform:translate(-50%,-50%);
-      border-radius:50%; z-index:9999;
-      pointer-events:none;
-    }
-    #cursor-dot {
-      width:6px; height:6px;
-      background:var(--ink);
-      mix-blend-mode:multiply;
-    }
-    #cursor-outline {
-      width:38px; height:38px;
-      border:1px solid var(--ink);
-      opacity:0.45;
-      transition:width 0.2s, height 0.2s, opacity 0.2s;
-    }
-    body:has(a:hover) #cursor-outline,
-    body:has(button:hover) #cursor-outline {
-      width:60px; height:60px; opacity:0.2;
-    }
-
-
-    .corner-index { display:none; }
-
-    /* ─── MAIN NAV ───────────────────────────────── */
-    .main-nav {
-      position:fixed; top:0; left:0; right:0; z-index:100;
-      height:80px;
-      display:flex; align-items:center;
-      padding:0 2.5rem;
-      transition: background 500ms var(--ease),
-                  border-color 500ms var(--ease),
-                  height 400ms var(--ease);
-    }
-    .main-nav::before {
-      content:'';
-      position:absolute; inset:0;
-      background:rgba(236,239,229,0.0);
-      border-bottom:1px solid rgba(16,17,19,0);
-      backdrop-filter:blur(0px);
-      -webkit-backdrop-filter:blur(0px);
-      transition: background 500ms var(--ease),
-                  border-color 500ms var(--ease),
-                  backdrop-filter 500ms var(--ease);
-      z-index:-1;
-    }
-    .main-nav.scrolled::before {
-      background:rgba(236,239,229,0.9);
-      border-color:rgba(16,17,19,0.1);
-      backdrop-filter:blur(16px);
-      -webkit-backdrop-filter:blur(16px);
-    }
-    .main-nav.scrolled { height:64px; }
-
-    /* logo */
-    .main-nav__logo {
-      display:flex; align-items:center;
-      flex-shrink:0; margin-right:auto;
-    }
-    .main-nav__logo svg {
-      height:42px; width:auto; display:block;
-      transition: transform 400ms var(--ease), opacity 300ms var(--ease);
-    }
-    .main-nav__logo:hover svg { transform: scale(1.06); opacity:0.7; }
-
-    /* links */
-    .main-nav__links {
-      list-style:none;
-      display:flex; align-items:center; gap:0;
-      margin-right:2rem;
-    }
-    .main-nav__item { position:relative; }
-    .main-nav__link {
-      display:block;
-      font-family:var(--mono); font-size:0.68rem;
-      letter-spacing:0.14em; text-transform:uppercase;
-      color:var(--ink);
-      padding:0 1.1rem;
-      position:relative;
-      height:1em;
-      line-height:1;
-      overflow:hidden;
-    }
-    .main-nav__link span {
-      display:block;
-      opacity:0.4;
-      transform:translateY(0);
-      transition:transform 380ms var(--ease), opacity 380ms var(--ease);
-      will-change:transform;
-    }
-    .main-nav__link::after {
-      content:attr(data-label);
-      position:absolute;
-      left:1.1rem;
-      top:0;
-      transform:translateY(100%);
-      font-family:var(--mono); font-size:0.68rem;
-      letter-spacing:0.14em; text-transform:uppercase;
-      color:var(--ink);
-      white-space:nowrap;
-      transition:transform 380ms var(--ease);
-      will-change:transform;
-    }
-    .main-nav__link:hover span   { transform:translateY(-100%); opacity:1; }
-    .main-nav__link:hover::after { transform:translateY(0); }
-
-    /* active dot indicator */
-    .main-nav__item.active .main-nav__link::before {
-      content:'';
-      position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-      width:3px; height:3px; border-radius:50%;
-      background:var(--accent);
-    }
-
-    /* CTA */
-    .main-nav__cta {
-      position:relative; overflow:hidden;
-      font-family:var(--mono); font-size:0.68rem;
-      letter-spacing:0.12em; text-transform:uppercase;
-      padding:0.55rem 1.4rem;
-      border:1px solid rgba(16,17,19,0.28);
-      color:var(--ink);
-      display:inline-flex; align-items:center; gap:0.5rem;
-      transition: color 300ms var(--ease), border-color 300ms var(--ease);
-    }
-    /* fill wipe on hover */
-    .main-nav__cta::before {
-      content:'';
-      position:absolute; inset:0;
-      background:var(--ink);
-      transform:translateX(-101%);
-      transition: transform 380ms var(--ease);
-      z-index:0;
-    }
-    .main-nav__cta span { position:relative; z-index:1; }
-    .main-nav__cta .cta-arrow {
-      position:relative; z-index:1;
-      display:inline-block;
-      transition: transform 350ms var(--ease);
-    }
-    .main-nav__cta:hover::before { transform:translateX(0); }
-    .main-nav__cta:hover { color:var(--cream); border-color:var(--ink); }
-    .main-nav__cta:hover .cta-arrow { transform:translateX(4px); }
-
-    /* magnetic CTA wrapper */
-    .main-nav__cta-wrap { position:relative; }
-
-    @media(max-width:768px){
-      .main-nav__links { display:none; }
-      .main-nav { padding:0 1.25rem; }
-    }
-
-    /* ─── HERO ───────────────────────────────────── */
-    #hero {
-      position:relative;
-      width:100%;
-      padding-top:80px;
-      overflow:hidden;
-      display:flex; flex-direction:column;
-      border-bottom:1px solid var(--hairline);
-    }
-    #canvas-zone {
-      position:relative;
-      height:calc(100vh - 80px);
-      overflow:hidden;
-      border-bottom:1px solid var(--hairline);
-    }
-    #ascii-canvas {
-      display:block; width:100%; height:100%;
-    }
-    .hero-text {
-      position:absolute;
-      bottom:var(--pad); left:var(--pad);
-      pointer-events:auto; z-index:2;
-    }
-    /* heroTitle — Helvetica Now Display / 168px / 84% / -4.5% */
-    .hero-headline {
-      font-family:var(--sans);
-      font-size:clamp(3.5rem, 11.67vw, 10.5rem); /* 168px @ 1440px */
-      font-weight:400;
-      line-height:0.924;
-      letter-spacing:-0.045em;
-      color:var(--ink);
-      margin-bottom:1rem;
-      pointer-events:none;
-    }
-    /* ─── HERO DIVIDER ─────────────────────────────── */
-    .hero-divider {
-      border-top:1px solid var(--hairline);
-      border-bottom:1px solid var(--hairline);
-      padding:2.5rem 5rem;
-      background:var(--bg);
-    }
-    /* display — Helvetica Now Display / 96px / 88% / -4% */
-    .hero-divider__text {
-      max-width:1600px; margin:0 auto;
-      font-family:var(--sans);
-      font-size:clamp(2.5rem, 6.67vw, 6rem);
-      line-height:0.88;
-      letter-spacing:-0.04em;
-      font-weight:400;
-      color:var(--ink);
-    }
-
-    /* ─── PANEL ZONE ─────────────────────────────── */
-    #panel-zone {
-      height:32vh; min-height:200px;
-      padding:var(--pad);
-      display:grid;
-      grid-template-columns:2fr 1.5fr 1fr;
-      gap:40px;
-      align-content:start;
-      background:var(--bg);
-      max-width:1600px; margin:0 auto;
-    }
-    .panel-col {
-      display:flex; flex-direction:column; gap:20px;
-    }
-    /* whisper — JetBrains Mono / 12px / 150% / +22% */
-    .meta-line {
-      display:flex; gap:12px;
-      font-family:var(--mono);
-      font-size:0.75rem; line-height:1.5;
-      letter-spacing:0.22em; text-transform:uppercase;
-      color:var(--muted); margin-bottom:8px;
-    }
-    /* body — Helvetica Now Display / 16px / 125% / -1% */
-    .bio-text {
-      font-family:var(--sans);
-      font-size:clamp(1rem, 1.25vw, 1.125rem); line-height:1.25;
-      letter-spacing:-0.01em;
-      max-width:400px; color:var(--ink);
-      opacity:1;
-      transition:all 300ms var(--ease);
-    }
-    .link-list {
-      list-style:none;
-      display:flex; flex-direction:column; gap:6px;
-    }
-    .link-list a {
-      font-size:0.88rem;
-      position:relative; display:inline-block;
-      width:fit-content; color:var(--ink);
-    }
-    .link-list a::after {
-      content:'';
-      position:absolute; bottom:0; left:0;
-      width:100%; height:1px;
-      background:currentColor;
-      transform:scaleX(0); transform-origin:right;
-      transition:transform 0.4s cubic-bezier(0.19,1,0.22,1);
-    }
-    .link-list a:hover::after { transform:scaleX(1); transform-origin:left; }
-    .colophon {
-      font-size:0.72rem; color:var(--muted);
-      line-height:1.55;
-    }
-    .telemetry {
-      font-family:var(--mono); font-size:0.68rem;
-      color:var(--muted); text-align:right; margin-top:auto;
-      line-height:1.7;
-    }
-
-    /* ─── SECTIONS ───────────────────────────────── */
-    .sec { padding:7rem 0; }
-    .wrap { width:min(1440px,calc(100% - 10rem)); margin:0 auto; }
-    @media(max-width:768px){ .wrap{ width:calc(100% - 3rem); } }
-
-    .sec--cream { background:var(--cream); color:var(--ink); }
-    .sec--ink   { background:var(--ink);   color:var(--cream); }
-    .sec--paper { background:var(--paper); color:var(--ink); }
-
-    /* section header */
-    /* whisper — JetBrains Mono / 12px / 150% / +22% */
-    .sh__label {
-      font-family:var(--mono); font-size:0.75rem;
-      line-height:1.5; letter-spacing:0.22em; text-transform:uppercase;
-      color:var(--muted);
-      display:flex; align-items:center; gap:0.75rem;
-      margin-bottom:1rem;
-    }
-    .sh__label::after {
-      content:''; flex:1; height:1px;
-      background:var(--line);
-    }
-    .sh__label--inv { color:rgba(236,239,229,0.4); }
-    .sh__label--inv::after { background:rgba(255,255,255,0.1); }
-    /* display — Helvetica Now Display / 96px / 88% / -4% */
-    .sh__h {
-      font-family:var(--sans);
-      font-size:clamp(2.5rem, 6.67vw, 6rem);
-      line-height:0.88; letter-spacing:-0.04em;
-      font-weight:400; max-width:18ch;
-      margin-top:0.5rem;
-    }
-    /* body — Helvetica Now Display / 16px / 125% / -1% */
-    .sh__sub {
-      margin-top:1.25rem;
-      font-family:var(--sans);
-      font-size:1rem; line-height:1.25;
-      letter-spacing:-0.01em;
-      max-width:44ch;
-      color:var(--ink); opacity:0.55;
-    }
-    .sh__sub--inv { color:rgba(236,239,229,1); opacity:0.45; }
-
-    /* ─── TICKER ─────────────────────────────────── */
-    .ticker {
-      border-top:1px solid var(--hairline);
-      border-bottom:1px solid var(--hairline);
-      padding:0.85rem 0; overflow:hidden;
-      background:var(--paper);
-    }
-    .ticker__track {
-      display:flex; gap:0;
-      animation:ticker 28s linear infinite;
-      white-space:nowrap;
-    }
-    .ticker__item {
-      font-family:var(--mono); font-size:0.7rem;
-      letter-spacing:0.16em; text-transform:uppercase;
-      color:var(--muted); padding:0 2.5rem; flex-shrink:0;
-    }
-    .ticker__item b { color:var(--accent); font-weight:400; margin-right:0.4rem; }
-    @keyframes ticker {
-      0%   { transform:translateX(0); }
-      100% { transform:translateX(-50%); }
-    }
-
-    /* ─── PROBLEM ────────────────────────────────── */
-    .problem {
-      background:var(--cream); color:var(--ink);
-      border-bottom:1px solid var(--hairline);
-    }
-    .problem__head {
-      display:grid; grid-template-columns:1fr 1fr;
-      gap:0;
-      max-width:1600px;
-      margin:0 auto;
-      padding:7rem 5rem 5rem;
-    }
-    .problem__head-label {
-      font-family:var(--mono); font-size:0.75rem;
-      line-height:1.5; letter-spacing:0.22em; text-transform:uppercase;
-      color:var(--muted); padding-top:0.15em;
-    }
-    .problem__head-body {
-      font-family:var(--sans);
-      font-size:clamp(1.25rem, 2vw, 1.5rem);
-      line-height:1.25; letter-spacing:-0.02em;
-      color:var(--ink); max-width:38ch;
-    }
-    .problem__head-body p + p { margin-top:1em; }
-    .problem__steps {
-      display:grid;
-      grid-template-columns:repeat(7, 1fr);
-      max-width:1600px;
-      margin:0 auto;
-      padding:0 5rem 5rem;
-    }
-    .problem__step {
-      display:flex; flex-direction:column;
-      justify-content:space-between;
-      padding:3rem 2rem 2.5rem;
-      border-left:1px solid var(--hairline);
-      min-height:380px;
-    }
-    .problem__step:last-child { border-right:1px solid var(--hairline); }
-    .problem__step-num {
-      font-family:var(--mono);
-      font-size:clamp(3.5rem, 5.5vw, 6rem);
-      line-height:0.88; letter-spacing:-0.02em; font-weight:400;
-      color:var(--ink);
-    }
-    .problem__step-text {
-      font-family:var(--sans);
-      font-size:clamp(0.8rem, 1vw, 0.9rem);
-      line-height:1.35; letter-spacing:-0.01em;
-      color:var(--ink); opacity:0.7;
-      margin-top:auto;
-    }
-    @media(max-width:1024px){
-      .problem__steps { grid-template-columns:repeat(4, 1fr); padding:0 1.5rem 3rem; }
-      .problem__step { min-height:280px; }
-    }
-    @media(max-width:680px){
-      .problem__head { grid-template-columns:1fr; gap:1.5rem; padding:4rem 1.5rem 3rem; }
-      .problem__steps { grid-template-columns:repeat(2, 1fr); padding:0 1.5rem 2rem; }
-      .problem__step { padding:2rem 1.5rem; min-height:220px; }
-    }
-
-    /* ─── CFO ────────────────────────────────────── */
-    .cfo { background:var(--paper); padding:7rem 5rem; }
-    .cfo__inner {
-      display:grid; grid-template-columns:5fr 7fr; gap:4rem; align-items:start;
-      max-width:1600px; margin:0 auto;
-    }
-    .cfo__list { list-style:none; margin-top:2rem; }
-    .cfo__item {
-      display:flex; gap:1.5rem; align-items:baseline;
-      padding:1.1rem 0; border-bottom:1px solid var(--hairline);
-      transition:all 300ms var(--ease); cursor:default;
-    }
-    .cfo__item:hover { padding-left:0.5rem; }
-    .cfo__item:first-child { border-top:1px solid var(--hairline); }
-    .cfo__num {
-      font-family:var(--mono); font-size:0.68rem;
-      letter-spacing:0.1em; color:var(--muted); flex-shrink:0; width:2rem;
-    }
-    .cfo__text { font-size:1.05rem; letter-spacing:-0.01em; }
-    @media(max-width:900px){ .cfo{ padding:4rem 1.5rem; } .cfo__inner{ grid-template-columns:1fr; } }
-
-    /* ─── PRODUCT ────────────────────────────────── */
-    .product { background:var(--cream); padding:7rem 5rem; }
-    .product > * { max-width:1600px; margin-left:auto; margin-right:auto; }
-    .product__grid {
-      display:grid; grid-template-columns:repeat(3,1fr);
-      gap:1px; background:var(--hairline);
-      border:1px solid var(--hairline);
-      margin-top:3rem;
-    }
-    .product__card {
-      background:var(--cream); padding:2rem 1.75rem;
-      transition:all 300ms var(--ease); cursor:default;
-      position:relative; overflow:hidden;
-    }
-    .product__card::after {
-      content:''; position:absolute; bottom:0; left:0; right:0;
-      height:2px; background:var(--ink);
-      transform:scaleX(0); transform-origin:left;
-      transition:transform 400ms var(--ease);
-    }
-    .product__card:hover::after { transform:scaleX(1); }
-    .product__card:hover { background:var(--paper); }
-    .product__num {
-      font-family:var(--mono); font-size:0.68rem;
-      letter-spacing:0.12em; color:var(--muted); margin-bottom:0.75rem;
-    }
-    .product__title { font-size:clamp(1rem,1.8vw,1.45rem); line-height:1.1; letter-spacing:-0.02em; }
-    @media(max-width:900px){ .product{ padding:4rem 1.5rem; } .product__grid{ grid-template-columns:1fr 1fr; } }
-    @media(max-width:520px){ .product__grid{ grid-template-columns:1fr; } }
-
-    /* ─── PROCESS ────────────────────────────────── */
-    .process { background:var(--ink); padding:7rem 5rem; }
-    .process > * { max-width:1600px; margin-left:auto; margin-right:auto; }
-    .process__steps { margin-top:3rem; }
-    .process__step {
-      display:grid; grid-template-columns:80px 1fr; gap:2rem;
-      padding:2rem 0; border-bottom:1px solid rgba(255,255,255,0.08);
-      transition:all 300ms var(--ease); cursor:default;
-    }
-    .process__step:first-child { border-top:1px solid rgba(255,255,255,0.08); }
-    .process__step:hover { padding-left:0.5rem; }
-    .process__step:hover .process__step-title { color:var(--cream); }
-    .process__step-num {
-      font-size:clamp(2rem,3.5vw,3rem); line-height:1;
-      letter-spacing:-0.04em; color:rgba(236,239,229,0.18);
-    }
-    .process__step-title {
-      font-size:clamp(1.15rem,2.2vw,1.7rem); line-height:1.05;
-      letter-spacing:-0.02em; color:rgba(236,239,229,0.6);
-      margin-bottom:0.5rem; font-weight:400;
-      transition:color 300ms;
-    }
-    .process__step-desc {
-      font-size:0.9rem; line-height:1.55; color:rgba(236,239,229,0.32);
-    }
-    @media(max-width:768px){ .process{ padding:4rem 1.5rem; } .process__step{ grid-template-columns:48px 1fr; } }
-
-    /* ─── USE CASES ──────────────────────────────── */
-    .usecases { background:var(--paper); padding:7rem 5rem; }
-    .usecases > * { max-width:1600px; margin-left:auto; margin-right:auto; }
-    .usecases__grid {
-      display:grid; grid-template-columns:repeat(3,1fr);
-      gap:1px; background:var(--hairline); border:1px solid var(--hairline);
-      margin-top:3rem;
-    }
-    .uc__card {
-      background:var(--paper); padding:2rem 1.75rem;
-      transition:background 300ms var(--ease); cursor:default;
-    }
-    .uc__card:hover { background:var(--cream); }
-    .uc__num {
-      font-family:var(--mono); font-size:0.68rem;
-      letter-spacing:0.12em; color:var(--muted); margin-bottom:0.6rem;
-    }
-    .uc__title { font-size:clamp(1rem,1.6vw,1.25rem); line-height:1.15; letter-spacing:-0.015em; margin-bottom:0.5rem; }
-    .uc__desc { font-size:0.85rem; line-height:1.5; color:var(--muted); }
-    @media(max-width:900px){ .usecases{ padding:4rem 1.5rem; } .usecases__grid{ grid-template-columns:1fr 1fr; } }
-    @media(max-width:520px){ .usecases__grid{ grid-template-columns:1fr; } }
-
-    /* ─── OUTCOMES ───────────────────────────────── */
-    .outcomes { background:var(--cream); padding:7rem 5rem; }
-    .outcomes > * { max-width:1600px; margin-left:auto; margin-right:auto; }
-    .outcomes__grid {
-      display:grid; grid-template-columns:repeat(2,1fr);
-      gap:1px; background:var(--hairline); border:1px solid var(--hairline);
-      margin-top:3rem;
-    }
-    .out__card {
-      background:var(--cream); padding:2.5rem 2rem;
-      cursor:default; transition:background 300ms var(--ease);
-    }
-    .out__card:hover { background:var(--paper); }
-    .out__metric {
-      font-size:clamp(2.5rem,5.5vw,4.2rem); line-height:0.95;
-      letter-spacing:-0.045em; margin-bottom:0.6rem;
-    }
-    .out__title { font-size:1.1rem; letter-spacing:-0.015em; margin-bottom:0.4rem; }
-    .out__desc { font-size:0.88rem; line-height:1.5; color:var(--muted); }
-    @media(max-width:768px){ .outcomes{ padding:4rem 1.5rem; } .outcomes__grid{ grid-template-columns:1fr; } }
-
-    /* ─── INFOGRAPHIC ────────────────────────────── */
-    .infographic { background:var(--ink); padding:7rem 5rem; }
-    .infographic__inner { display:grid; grid-template-columns:1fr 1.2fr; gap:4rem; align-items:center; max-width:1600px; margin:0 auto; }
-    #radial-canvas { width:100%; aspect-ratio:1; max-width:560px; display:block; margin:0 auto; }
-    .legend__item {
-      display:grid; grid-template-columns:2.5rem 1fr auto;
-      align-items:center; gap:1rem;
-      padding:0.8rem 0; border-bottom:1px solid rgba(255,255,255,0.06);
-      cursor:pointer; transition:all 250ms var(--ease);
-    }
-    .legend__item:first-child { border-top:1px solid rgba(255,255,255,0.06); }
-    .legend__item:hover { padding-left:0.4rem; }
-    .legend__dot {
-      width:8px; height:8px; border-radius:50%;
-      background:var(--cream); justify-self:center;
-      transition:all 300ms var(--ease);
-    }
-    .legend__item:hover .legend__dot { background:var(--accent); box-shadow:0 0 10px rgba(255,61,4,0.6); }
-    .legend__label {
-      font-family:var(--mono); font-size:0.7rem;
-      letter-spacing:0.08em; text-transform:uppercase;
-      color:rgba(236,239,229,0.45); transition:color 250ms;
-    }
-    .legend__item:hover .legend__label { color:var(--cream); }
-    .legend__val { font-size:0.95rem; letter-spacing:-0.02em; color:rgba(236,239,229,0.4); transition:color 250ms; }
-    .legend__item:hover .legend__val { color:var(--cream); }
-    @media(max-width:900px){ .infographic{ padding:4rem 1.5rem; } .infographic__inner{ grid-template-columns:1fr; } }
-
-    /* ─── ENTERPRISE ─────────────────────────────── */
-    .enterprise { background:var(--paper); padding:7rem 5rem; }
-    .enterprise > * { max-width:1600px; margin-left:auto; margin-right:auto; }
-    .enterprise__inner { display:grid; grid-template-columns:1fr 1fr; gap:4rem; margin-top:3rem; }
-    .enterprise__list { list-style:none; margin-top:1rem; }
-    .enterprise__item {
-      display:grid; grid-template-columns:2rem 1fr;
-      gap:0.75rem; align-items:baseline;
-      padding:0.85rem 0; border-bottom:1px solid var(--hairline);
-      transition:padding 300ms var(--ease); cursor:default;
-      font-size:0.95rem;
-    }
-    .enterprise__item:hover { padding-left:0.35rem; }
-    .enterprise__item-num {
-      font-family:var(--mono); font-size:0.68rem;
-      letter-spacing:0.1em; color:var(--muted);
-    }
-    .enterprise__note {
-      font-family:var(--mono); font-size:0.7rem;
-      letter-spacing:0.08em; text-transform:uppercase;
-      color:var(--muted); margin-top:2rem;
-    }
-    .terminal {
-      background:var(--ink); color:var(--cream);
-      border:1px solid rgba(16,17,19,0.15);
-      padding:1.5rem; font-family:var(--mono);
-      font-size:0.72rem; line-height:1.9; letter-spacing:0.04em;
-      height:280px; overflow-y:auto; scroll-behavior:smooth;
-    }
-    .terminal::-webkit-scrollbar { width:3px; }
-    .terminal::-webkit-scrollbar-thumb { background:rgba(236,239,229,0.15); }
-    .t-ok   { color:rgba(146,157,133,1); }
-    .t-warn { color:rgba(255,61,4,0.85); }
-    .t-dim  { color:rgba(236,239,229,0.22); }
-    @media(max-width:900px){ .enterprise{ padding:4rem 1.5rem; } .enterprise__inner{ grid-template-columns:1fr; } }
-
-    /* ─── CTA ────────────────────────────────────── */
-    .cta { background:var(--cream); padding:9rem 5rem 8rem; text-align:center; border-top:1px solid var(--hairline); }
-    .cta > * { max-width:1600px; margin-left:auto; margin-right:auto; }
-    .cta__h {
-      font-size:clamp(2.5rem,6.5vw,6rem);
-      line-height:0.9; letter-spacing:-0.04em; font-weight:400;
-      margin-bottom:1rem;
-    }
-    .cta__sub { font-size:1rem; line-height:1.5; color:var(--muted); margin-bottom:0.4rem; }
-    .cta__note {
-      font-family:var(--mono); font-size:0.7rem;
-      letter-spacing:0.1em; text-transform:uppercase;
-      color:rgba(16,17,19,0.3); margin-bottom:2.5rem;
-    }
-    .cta__actions { display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; }
-    .btn {
-      display:inline-flex; align-items:center; gap:0.4rem;
-      padding:0.7rem 1.4rem;
-      font-family:var(--mono); font-size:0.72rem;
-      letter-spacing:0.1em; text-transform:uppercase;
-      border:1px solid transparent; cursor:pointer;
-      transition:all 300ms var(--ease);
-    }
-    .btn-primary { background:var(--ink); color:var(--cream); border-color:var(--ink); }
-    .btn-primary:hover { background:transparent; color:var(--ink); }
-    .btn-secondary { background:transparent; color:var(--ink); border-color:rgba(16,17,19,0.35); }
-    .btn-secondary:hover { border-color:var(--ink); }
-    @media(max-width:768px){ .cta{ padding:5rem 1.5rem 4rem; } }
-
-    /* ─── FOOTER ─────────────────────────────────── */
-    .footer { background:var(--ink); border-top:1px solid rgba(255,255,255,0.08); padding:4rem 5rem 2rem; }
-    .footer__inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; max-width:1600px; margin:0 auto; }
-    .footer__brand {
-      display:flex; align-items:center; gap:0.65rem;
-      font-family:var(--mono); font-size:0.72rem;
-      letter-spacing:0.22em; text-transform:uppercase;
-      color:var(--cream); margin-bottom:1rem;
-    }
-    .footer__tagline { font-size:0.85rem; line-height:1.5; color:rgba(236,239,229,0.3); max-width:22rem; }
-    .footer__col h4 {
-      font-family:var(--mono); font-size:0.68rem;
-      letter-spacing:0.2em; text-transform:uppercase;
-      color:rgba(236,239,229,0.3); margin-bottom:1rem; font-weight:400;
-    }
-    .footer__link {
-      display:block; font-size:0.88rem;
-      color:rgba(236,239,229,0.45); padding:0.2rem 0;
-      transition:color 250ms var(--ease);
-    }
-    .footer__link:hover { color:var(--cream); }
-    .footer__bottom {
-      margin-top:3rem; padding-top:1.5rem;
-      border-top:1px solid rgba(255,255,255,0.08);
-      display:flex; justify-content:space-between; align-items:center;
-      max-width:1600px; margin-left:auto; margin-right:auto;
-      font-family:var(--mono); font-size:0.68rem;
-      letter-spacing:0.08em; text-transform:uppercase;
-      color:rgba(236,239,229,0.2);
-    }
-    @media(max-width:900px){ .footer{ padding:3rem 1.5rem 2rem; } .footer__inner{ grid-template-columns:1fr 1fr; } }
-    @media(max-width:520px){ .footer__inner{ grid-template-columns:1fr; } }
-
-    /* ─── REVEAL ─────────────────────────────────── */
-    .reveal { opacity:0; transform:translateY(18px); transition:opacity 600ms var(--ease), transform 600ms var(--ease); }
-    .reveal.in { opacity:1; transform:translateY(0); }
-    @media(prefers-reduced-motion:reduce){ .reveal{ opacity:1; transform:none; transition:none; } }
-
-    /* ─── MOBILE PANEL ───────────────────────────── */
-    @media(max-width:768px){
-      #panel-zone { grid-template-columns:1fr; height:auto; min-height:30vh; overflow-y:auto; }
-      .corner-index { display:none; }
-    }
-    @media(max-width:520px){
-      .cta__actions { flex-direction:column; align-items:stretch; }
-      .btn { width:100%; }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/globals.css">
 </head>
-<body>
+<body class="page-home">
 
-<!-- ─── CURSOR ──────────────────────────────────── -->
-<div id="cursor-dot"></div>
-<div id="cursor-outline"></div>
+<!-- ─── CURSOR ──────────────────────────────────────── -->
+<div id="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-outline" aria-hidden="true"></div>
 
-<!-- ─── MAIN NAV ──────────────────────────────────── -->
-<nav class="main-nav" id="main-nav" role="navigation" aria-label="Main navigation">
-  <a href="#" class="main-nav__logo" aria-label="Revorion">
-    <svg width="221" height="141" viewBox="0 0 221 141" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M155.937 119.006C155.924 116.204 158.184 113.922 160.985 113.909L176.197 113.838C178.998 113.825 181.279 116.085 181.292 118.887L181.363 134.108C181.376 136.91 179.117 139.192 176.316 139.205L161.103 139.276C158.303 139.289 156.022 137.028 156.009 134.226L155.937 119.006Z" fill="currentColor"/>
-      <path d="M47.4726 39.447C49.7433 39.4347 139.258 40.0575 142.274 40.1137L142.274 40.119L174.894 39.9664C178.205 39.9509 180.901 42.6243 180.916 45.9376L181.04 81.4963C181.05 84.368 179.922 87.1264 177.902 89.1665L154.118 113.196C152.945 114.382 151.35 115.053 149.682 115.064L142.625 115.11C142.625 115.11 48.4847 114.399 45.7894 114.41L25.7911 114.479L25.8494 133.745C25.8579 136.544 23.7627 138.821 21.166 138.834L5.44005 138.913C2.84027 138.926 0.721101 136.666 0.705987 133.864L0.662595 125.745C0.626344 119.723 -0.140241 115.641 4.33464 110.83C8.36775 106.888 12.3208 102.8 16.3462 98.8405C18.8012 96.4638 21.0725 93.8345 23.8095 91.7742C27.2306 89.1997 31.9145 89.5864 35.982 89.5732L44.9135 89.5461C47.4811 89.5391 142.509 90.2769 142.509 90.2769L142.509 90.2667L150.846 90.2277C153.859 90.2136 156.291 87.7573 156.277 84.7413L156.209 70.3585C156.195 67.3425 153.741 64.909 150.728 64.9231L142.39 64.9621L142.39 64.982C138.888 64.8318 47.2381 64.3891 44.4437 64.3413C40.2638 64.494 36.0101 64.1761 31.8378 64.4134C25.0384 64.8001 25.5103 70.3713 25.5671 75.1657L25.6531 82.4393C25.6702 84.0586 25.81 85.8583 25.0306 87.3412C24.4984 88.3542 23.6178 89.0188 22.5271 89.3403C20.7888 89.8522 7.17505 89.9189 4.94736 89.6862C4.16675 89.6049 3.35915 89.4095 2.67091 89.0216C1.69389 88.4726 0.983544 87.6558 0.705202 86.5572C0.357024 85.1837 0.245968 70.673 0.431689 68.952C0.511888 68.2091 0.718178 67.5011 1.12654 66.8679C1.70383 65.9727 2.59464 65.3751 3.60778 65.0771C5.02964 64.6589 6.63995 64.7846 8.10926 64.7827C11.4616 64.7781 17.8335 65.141 20.8875 64.497C26.6731 63.277 26.2987 58.286 26.2554 53.6293L26.1838 46.0194C26.1457 41.5168 27.0954 40.2324 31.7877 39.5929C32.3006 39.5228 33.4546 39.5069 34.0063 39.5011L47.4726 39.447Z" fill="currentColor"/>
-      <path d="M200.066 0.092345L202.012 6.35414C203.668 11.6826 207.864 15.8396 213.207 17.4452L219.487 19.332L213.225 21.2775C207.897 22.9331 203.74 27.1291 202.134 32.4729L200.247 38.7526L198.302 32.4908C196.646 27.1623 192.45 23.0053 187.107 21.3997L180.827 19.5129L187.089 17.5674C192.417 15.9119 196.574 11.7158 198.18 6.37208L200.066 0.092345Z" fill="currentColor"/>
-    </svg>
-  </a>
-  <ul class="main-nav__links">
-    <li class="main-nav__item"><a href="#product"    class="main-nav__link" data-label="Product"><span>Product</span></a></li>
-    <li class="main-nav__item"><a href="#use-cases"  class="main-nav__link" data-label="Use Cases"><span>Use Cases</span></a></li>
-    <li class="main-nav__item"><a href="#enterprise" class="main-nav__link" data-label="Enterprise"><span>Enterprise</span></a></li>
-  </ul>
-  <div class="main-nav__cta-wrap">
-    <a href="#demo" class="main-nav__cta" id="nav-cta">
-      <span>Book a demo</span>
-      <span class="cta-arrow">→</span>
+<!-- ─── NAV ─────────────────────────────────────────── -->
+<nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo" aria-label="Revorion homepage">
+      <svg width="221" height="141" viewBox="0 0 221 141" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M155.937 119.006C155.924 116.204 158.184 113.922 160.985 113.909L176.197 113.838C178.998 113.825 181.279 116.085 181.292 118.887L181.363 134.108C181.376 136.91 179.117 139.192 176.316 139.205L161.103 139.276C158.303 139.289 156.022 137.028 156.009 134.226L155.937 119.006Z" fill="currentColor"/>
+        <path d="M47.4726 39.447C49.7433 39.4347 139.258 40.0575 142.274 40.1137L142.274 40.119L174.894 39.9664C178.205 39.9509 180.901 42.6243 180.916 45.9376L181.04 81.4963C181.05 84.368 179.922 87.1264 177.902 89.1665L154.118 113.196C152.945 114.382 151.35 115.053 149.682 115.064L142.625 115.11C142.625 115.11 48.4847 114.399 45.7894 114.41L25.7911 114.479L25.8494 133.745C25.8579 136.544 23.7627 138.821 21.166 138.834L5.44005 138.913C2.84027 138.926 0.721101 136.666 0.705987 133.864L0.662595 125.745C0.626344 119.723 -0.140241 115.641 4.33464 110.83C8.36775 106.888 12.3208 102.8 16.3462 98.8405C18.8012 96.4638 21.0725 93.8345 23.8095 91.7742C27.2306 89.1997 31.9145 89.5864 35.982 89.5732L44.9135 89.5461C47.4811 89.5391 142.509 90.2769 142.509 90.2769L142.509 90.2667L150.846 90.2277C153.859 90.2136 156.291 87.7573 156.277 84.7413L156.209 70.3585C156.195 67.3425 153.741 64.909 150.728 64.9231L142.39 64.9621L142.39 64.982C138.888 64.8318 47.2381 64.3891 44.4437 64.3413C40.2638 64.494 36.0101 64.1761 31.8378 64.4134C25.0384 64.8001 25.5103 70.3713 25.5671 75.1657L25.6531 82.4393C25.6702 84.0586 25.81 85.8583 25.0306 87.3412C24.4984 88.3542 23.6178 89.0188 22.5271 89.3403C20.7888 89.8522 7.17505 89.9189 4.94736 89.6862C4.16675 89.6049 3.35915 89.4095 2.67091 89.0216C1.69389 88.4726 0.983544 87.6558 0.705202 86.5572C0.357024 85.1837 0.245968 70.673 0.431689 68.952C0.511888 68.2091 0.718178 67.5011 1.12654 66.8679C1.70383 65.9727 2.59464 65.3751 3.60778 65.0771C5.02964 64.6589 6.63995 64.7846 8.10926 64.7827C11.4616 64.7781 17.8335 65.141 20.8875 64.497C26.6731 63.277 26.2987 58.286 26.2554 53.6293L26.1838 46.0194C26.1457 41.5168 27.0954 40.2324 31.7877 39.5929C32.3006 39.5228 33.4546 39.5069 34.0063 39.5011L47.4726 39.447Z" fill="currentColor"/>
+        <path d="M200.066 0.092345L202.012 6.35414C203.668 11.6826 207.864 15.8396 213.207 17.4452L219.487 19.332L213.225 21.2775C207.897 22.9331 203.74 27.1291 202.134 32.4729L200.247 38.7526L198.302 32.4908C196.646 27.1623 192.45 23.0053 187.107 21.3997L180.827 19.5129L187.089 17.5674C192.417 15.9119 196.574 11.7158 198.18 6.37208L200.066 0.092345Z" fill="currentColor"/>
+      </svg>
     </a>
+    <div class="nav__links">
+      <a href="industries.html" class="nav__link">Industries</a>
+      <a href="contact.html" class="nav__link">Contact</a>
+      <a href="#get-started" class="btn-primary" id="nav-cta">Book a Demo →</a>
+      <label class="nav-grid-debug">
+        <input type="checkbox" id="grid-debug-toggle" class="nav-grid-debug__input" aria-label="Show 12-column layout grid (temporary)">
+        <span class="nav-grid-debug__switch" aria-hidden="true"></span>
+        <span class="nav-grid-debug__text">Grid</span>
+      </label>
+    </div>
   </div>
 </nav>
 
-<!-- ─────────────────────────────────────────────── -->
-<!-- HERO                                            -->
-<!-- ─────────────────────────────────────────────── -->
-<div id="hero">
-  <div id="canvas-zone">
-    <canvas id="ascii-canvas"></canvas>
-    <div class="hero-text">
-      <div class="hero-headline">Stop revenue<br>leakage before<br>it hits the ledger.</div>
+<!-- ─── HERO ─────────────────────────────────────────── -->
+<section class="hero" id="hero">
+
+  <!-- ASCII canvas + heading overlay -->
+  <div class="hero__canvas-zone">
+    <canvas id="ascii-canvas" aria-hidden="true"></canvas>
+    <div class="hero__heading">
+      <h1 class="type-h1">Stop revenue<br>leakage before<br>it hits the ledger.</h1>
     </div>
   </div>
 
-  <div class="hero-divider">
-    <div class="hero-divider__text">AI for finance teams who need revenue they can trust.</div>
+  <!-- ─── TICKER — world clocks (sits under canvas, above strip) ─ -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>NEW YORK · <span class="ticker__time" data-tz="America/New_York">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>TORONTO · <span class="ticker__time" data-tz="America/Toronto">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>CHICAGO · <span class="ticker__time" data-tz="America/Chicago">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SAN FRANCISCO · <span class="ticker__time" data-tz="America/Los_Angeles">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SÃO PAULO · <span class="ticker__time" data-tz="America/Sao_Paulo">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>LONDON · <span class="ticker__time" data-tz="Europe/London">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>PARIS · <span class="ticker__time" data-tz="Europe/Paris">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>FRANKFURT · <span class="ticker__time" data-tz="Europe/Berlin">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>ZURICH · <span class="ticker__time" data-tz="Europe/Zurich">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>DUBAI · <span class="ticker__time" data-tz="Asia/Dubai">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>TEL AVIV · <span class="ticker__time" data-tz="Asia/Jerusalem">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>MUMBAI · <span class="ticker__time" data-tz="Asia/Kolkata">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SINGAPORE · <span class="ticker__time" data-tz="Asia/Singapore">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>HONG KONG · <span class="ticker__time" data-tz="Asia/Hong_Kong">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SHANGHAI · <span class="ticker__time" data-tz="Asia/Shanghai">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>TOKYO · <span class="ticker__time" data-tz="Asia/Tokyo">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SEOUL · <span class="ticker__time" data-tz="Asia/Seoul">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SYDNEY · <span class="ticker__time" data-tz="Australia/Sydney">--:--:-- --</span></span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>NEW YORK · <span class="ticker__time" data-tz="America/New_York">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>TORONTO · <span class="ticker__time" data-tz="America/Toronto">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>CHICAGO · <span class="ticker__time" data-tz="America/Chicago">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SAN FRANCISCO · <span class="ticker__time" data-tz="America/Los_Angeles">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SÃO PAULO · <span class="ticker__time" data-tz="America/Sao_Paulo">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>LONDON · <span class="ticker__time" data-tz="Europe/London">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>PARIS · <span class="ticker__time" data-tz="Europe/Paris">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>FRANKFURT · <span class="ticker__time" data-tz="Europe/Berlin">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>ZURICH · <span class="ticker__time" data-tz="Europe/Zurich">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>DUBAI · <span class="ticker__time" data-tz="Asia/Dubai">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>TEL AVIV · <span class="ticker__time" data-tz="Asia/Jerusalem">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>MUMBAI · <span class="ticker__time" data-tz="Asia/Kolkata">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SINGAPORE · <span class="ticker__time" data-tz="Asia/Singapore">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>HONG KONG · <span class="ticker__time" data-tz="Asia/Hong_Kong">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SHANGHAI · <span class="ticker__time" data-tz="Asia/Shanghai">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>TOKYO · <span class="ticker__time" data-tz="Asia/Tokyo">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SEOUL · <span class="ticker__time" data-tz="Asia/Seoul">--:--:-- --</span></span>
+      <span class="ticker__item type-terms"><span class="ticker__dot"></span>SYDNEY · <span class="ticker__time" data-tz="Australia/Sydney">--:--:-- --</span></span>
+    </div>
   </div>
 
-  <div id="panel-zone">
-    <!-- col 1: bio -->
-    <div class="panel-col">
-      <div>
-        <div class="meta-line">
-          <span>Revorion</span>
-          <span id="timestamp">--:--:--</span>
+  <!-- Figma 2426:172 — Frame 1 -->
+  <div class="hero__strip">
+    <div class="container hero__strip-inner">
+      <div class="hero__strip-main">
+        <p class="hero__strip-headline">AI for finance teams who need revenue they can trust.</p>
+        <p class="hero__strip-body">The average enterprise loses 2–5% of contracted revenue to operational gaps between contracts and invoices. Revorion detects leakage, quantifies impact, and drives recovery.</p>
+      </div>
+      <p class="hero__strip-integrations">
+        We integrate with your systems, such as: NetSuite <span class="hero__strip-square" aria-hidden="true"></span> Salesforce <span class="hero__strip-square" aria-hidden="true"></span> Stripe
+      </p>
+    </div>
+  </div>
+
+</section><!-- /hero -->
+
+<!-- ─── THE PROBLEM ──────────────────────────────────── -->
+<section class="sec sec--chalk" id="problem">
+  <div class="container">
+    <div class="sec__label">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">The Problem</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">SIGNAL · LEAKAGE</span>
+    </div>
+    <div class="sec__header">
+      <h2 class="type-h1">Revenue<br>leakage is<br>rarely one<br>big mistake.</h2>
+      <figure class="problem__header-figure">
+        <canvas class="problem__ascii-scan" aria-hidden="true"></canvas>
+        <div class="problem__scan-bar" aria-hidden="true"></div>
+        <img
+          src="assets/money.png"
+          alt=""
+          class="problem__header-img"
+          width="2950"
+          height="7044"
+          loading="lazy"
+          decoding="async"
+        >
+      </figure>
+      <p class="sec__header-intro">Revenue leakage is thousands of small failures hidden across contracts, systems, and teams, invisible until the money is already gone. Each discrepancy is small. The cumulative exposure is not.</p>
+    </div>
+    <div class="problem__grid" role="list">
+      <div class="problem__item" role="listitem">
+        <span class="problem__item-num">01</span>
+        <p class="type-body problem__item-text">Discounts applied incorrectly</p>
+      </div>
+      <div class="problem__item" role="listitem">
+        <span class="problem__item-num">02</span>
+        <p class="type-body problem__item-text">Contract terms not reflected in invoices</p>
+      </div>
+      <div class="problem__item" role="listitem">
+        <span class="problem__item-num">03</span>
+        <p class="type-body problem__item-text">Usage not billed</p>
+      </div>
+      <div class="problem__item" role="listitem">
+        <span class="problem__item-num">04</span>
+        <p class="type-body problem__item-text">Renewals missed</p>
+      </div>
+      <div class="problem__item" role="listitem">
+        <span class="problem__item-num">05</span>
+        <p class="type-body problem__item-text">Escalators never triggered</p>
+      </div>
+      <div class="problem__item" role="listitem">
+        <span class="problem__item-num">06</span>
+        <p class="type-body problem__item-text">Credits issued without policy checks</p>
+      </div>
+      <div class="problem__item" role="listitem">
+        <span class="problem__item-num">07</span>
+        <p class="type-body problem__item-text">Manual workarounds that become permanent</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOR THE CFO ──────────────────────────────────── -->
+<section class="sec sec--chalk" id="cfo">
+  <div class="cfo__bg-wrap" aria-hidden="true">
+    <div class="cfo__bg cfo__bg--sharp"></div>
+    <div class="cfo__bg cfo__bg--blur"></div>
+    <div class="cfo__bg cfo__bg--fx"></div>
+    <div class="cfo__bg cfo__bg--dark"></div>
+  </div>
+  <div class="container">
+    <div class="cfo__panel">
+
+      <!-- Scan band — donja traka: micro kolone 7–11 + INVOICE/CONTRACT -->
+      <div class="cfo__scan-band" aria-hidden="true">
+        <div class="cfo__scan-micro cfo__scan-micro--full" aria-hidden="true">
+          <div class="cfo__scan-micro-inner">
+          <div class="cfo__scan-micro-col cfo__scan-micro-col--a">
+            <div class="cfo__scan-micro-track">
+              <div class="cfo__scan-micro-scroll">
+                <div class="cfo__scan-micro-chunk">
+                  <span class="cfo__scan-micro-line">SEQ PG LIN LABEL OP OPERANDS SFX CT LOCN</span>
+                  <span class="cfo__scan-micro-line">101 1 01 000 DCW SYSTP GMRK1-21</span>
+                  <span class="cfo__scan-micro-line">102 1 02 SYST M (U1 814 R 40</span>
+                  <span class="cfo__scan-micro-line">0366 M (U1 814 R 40 CTL EQU</span>
+                  <span class="cfo__scan-micro-line">0374 C 833 802 40 ORG 000000</span>
+                  <span class="cfo__scan-micro-line">DCW 000 BSS BEF RETRIEVE PASS 2</span>
+                  <span class="cfo__scan-micro-line">REDUNDANCY ON TAPE LOAD JOB</span>
+                  <span class="cfo__scan-micro-line">1401 AUTOCODER SYSTEM HEADR</span>
+                  <span class="cfo__scan-micro-line">GMRK1-2 999999 HEADR INSTR TYPE</span>
+                  <span class="cfo__scan-micro-line">3 0089 4 354 3 48 LOCN ROLL</span>
+                </div>
+                <div class="cfo__scan-micro-chunk" aria-hidden="true">
+                  <span class="cfo__scan-micro-line">SEQ PG LIN LABEL OP OPERANDS SFX CT LOCN</span>
+                  <span class="cfo__scan-micro-line">101 1 01 000 DCW SYSTP GMRK1-21</span>
+                  <span class="cfo__scan-micro-line">102 1 02 SYST M (U1 814 R 40</span>
+                  <span class="cfo__scan-micro-line">0366 M (U1 814 R 40 CTL EQU</span>
+                  <span class="cfo__scan-micro-line">0374 C 833 802 40 ORG 000000</span>
+                  <span class="cfo__scan-micro-line">DCW 000 BSS BEF RETRIEVE PASS 2</span>
+                  <span class="cfo__scan-micro-line">REDUNDANCY ON TAPE LOAD JOB</span>
+                  <span class="cfo__scan-micro-line">1401 AUTOCODER SYSTEM HEADR</span>
+                  <span class="cfo__scan-micro-line">GMRK1-2 999999 HEADR INSTR TYPE</span>
+                  <span class="cfo__scan-micro-line">3 0089 4 354 3 48 LOCN ROLL</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cfo__scan-micro-col cfo__scan-micro-col--b">
+            <div class="cfo__scan-micro-track">
+              <div class="cfo__scan-micro-scroll cfo__scan-micro-scroll--slow">
+                <div class="cfo__scan-micro-chunk">
+                  <span class="cfo__scan-micro-line">EQU (U1 814) DC 833 802</span>
+                  <span class="cfo__scan-micro-line">INSTRUCTION TYPE PASS 1 OK</span>
+                  <span class="cfo__scan-micro-line">TAPE UNIT 02 READY EOF 0</span>
+                  <span class="cfo__scan-micro-line">SYSTP GMRK1-21 101 1 01</span>
+                  <span class="cfo__scan-micro-line">RETRIEVE PASS 2 FOR ASSEMBLY</span>
+                  <span class="cfo__scan-micro-line">LOCN 0366 0374 0382 CHAIN</span>
+                  <span class="cfo__scan-micro-line">BSS 0400 0408 LABEL RESOLVED</span>
+                  <span class="cfo__scan-micro-line">CTL ORG 000 DCW 000000</span>
+                  <span class="cfo__scan-micro-line">RVRN LEDGER SYNC CHECKSUM A7F2</span>
+                  <span class="cfo__scan-micro-line">REV INT 814 R 40 MISMATCH 0</span>
+                </div>
+                <div class="cfo__scan-micro-chunk" aria-hidden="true">
+                  <span class="cfo__scan-micro-line">EQU (U1 814) DC 833 802</span>
+                  <span class="cfo__scan-micro-line">INSTRUCTION TYPE PASS 1 OK</span>
+                  <span class="cfo__scan-micro-line">TAPE UNIT 02 READY EOF 0</span>
+                  <span class="cfo__scan-micro-line">SYSTP GMRK1-21 101 1 01</span>
+                  <span class="cfo__scan-micro-line">RETRIEVE PASS 2 FOR ASSEMBLY</span>
+                  <span class="cfo__scan-micro-line">LOCN 0366 0374 0382 CHAIN</span>
+                  <span class="cfo__scan-micro-line">BSS 0400 0408 LABEL RESOLVED</span>
+                  <span class="cfo__scan-micro-line">CTL ORG 000 DCW 000000</span>
+                  <span class="cfo__scan-micro-line">RVRN LEDGER SYNC CHECKSUM A7F2</span>
+                  <span class="cfo__scan-micro-line">REV INT 814 R 40 MISMATCH 0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cfo__scan-micro-col cfo__scan-micro-col--c">
+            <div class="cfo__scan-micro-track">
+              <div class="cfo__scan-micro-scroll cfo__scan-micro-scroll--fast">
+                <div class="cfo__scan-micro-chunk">
+                  <span class="cfo__scan-micro-line">000000 101 1 01 SYST</span>
+                  <span class="cfo__scan-micro-line">000004 102 1 02 EQU</span>
+                  <span class="cfo__scan-micro-line">000012 0366 M U1 814</span>
+                  <span class="cfo__scan-micro-line">000020 0374 C 833 802</span>
+                  <span class="cfo__scan-micro-line">PG 01 LIN 014 OP DCW</span>
+                  <span class="cfo__scan-micro-line">SFX CT 3 LOCN 0089</span>
+                  <span class="cfo__scan-micro-line">INVOICE BATCH ID FY26-Q4-881</span>
+                  <span class="cfo__scan-micro-line">CONTRACT LINE ITEMS 48 OF 48</span>
+                  <span class="cfo__scan-micro-line">TAPE BLOCK 354 READ VERIFY OK</span>
+                  <span class="cfo__scan-micro-line">AUTOCODER END OF MODULE</span>
+                </div>
+                <div class="cfo__scan-micro-chunk" aria-hidden="true">
+                  <span class="cfo__scan-micro-line">000000 101 1 01 SYST</span>
+                  <span class="cfo__scan-micro-line">000004 102 1 02 EQU</span>
+                  <span class="cfo__scan-micro-line">000012 0366 M U1 814</span>
+                  <span class="cfo__scan-micro-line">000020 0374 C 833 802</span>
+                  <span class="cfo__scan-micro-line">PG 01 LIN 014 OP DCW</span>
+                  <span class="cfo__scan-micro-line">SFX CT 3 LOCN 0089</span>
+                  <span class="cfo__scan-micro-line">INVOICE BATCH ID FY26-Q4-881</span>
+                  <span class="cfo__scan-micro-line">CONTRACT LINE ITEMS 48 OF 48</span>
+                  <span class="cfo__scan-micro-line">TAPE BLOCK 354 READ VERIFY OK</span>
+                  <span class="cfo__scan-micro-line">AUTOCODER END OF MODULE</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cfo__scan-micro-col cfo__scan-micro-col--d">
+            <div class="cfo__scan-micro-track">
+              <div class="cfo__scan-micro-scroll cfo__scan-micro-scroll--med">
+                <div class="cfo__scan-micro-chunk">
+                  <span class="cfo__scan-micro-line">JOB CTL EQU ORG DCW DC</span>
+                  <span class="cfo__scan-micro-line">BSS BEF SYSTP GMRK1-21</span>
+                  <span class="cfo__scan-micro-line">M (U1 814 R 40 C 833</span>
+                  <span class="cfo__scan-micro-line">802 40 DCW 000 HEADR</span>
+                  <span class="cfo__scan-micro-line">999999 TAPE LOAD COMPLETE</span>
+                  <span class="cfo__scan-micro-line">ASSEMBLY RUN ID 1401-AC-09</span>
+                  <span class="cfo__scan-micro-line">REVENUE TRACE NODE RVRN-01</span>
+                  <span class="cfo__scan-micro-line">LEAKAGE SCAN PASS THRESHOLD</span>
+                  <span class="cfo__scan-micro-line">OPERANDS SFX CT LOCN SEQ</span>
+                  <span class="cfo__scan-micro-line">INSTRUCTION TYPE MNEMONIC OK</span>
+                </div>
+                <div class="cfo__scan-micro-chunk" aria-hidden="true">
+                  <span class="cfo__scan-micro-line">JOB CTL EQU ORG DCW DC</span>
+                  <span class="cfo__scan-micro-line">BSS BEF SYSTP GMRK1-21</span>
+                  <span class="cfo__scan-micro-line">M (U1 814 R 40 C 833</span>
+                  <span class="cfo__scan-micro-line">802 40 DCW 000 HEADR</span>
+                  <span class="cfo__scan-micro-line">999999 TAPE LOAD COMPLETE</span>
+                  <span class="cfo__scan-micro-line">ASSEMBLY RUN ID 1401-AC-09</span>
+                  <span class="cfo__scan-micro-line">REVENUE TRACE NODE RVRN-01</span>
+                  <span class="cfo__scan-micro-line">LEAKAGE SCAN PASS THRESHOLD</span>
+                  <span class="cfo__scan-micro-line">OPERANDS SFX CT LOCN SEQ</span>
+                  <span class="cfo__scan-micro-line">INSTRUCTION TYPE MNEMONIC OK</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
         </div>
-        <p class="bio-text">
-          The average enterprise loses 2–5% of contracted revenue to operational gaps between contracts and invoices. Revorion detects leakage, quantifies impact, and drives recovery.
-        </p>
+        <div class="cfo__scan-track">
+          <div class="cfo__scan-crop">
+            <span class="cfo__scan-word" data-scramble-text="INVOICE">INVOICE</span>
+          </div>
+          <div class="cfo__scan-crop cfo__scan-crop--dup" aria-hidden="true">
+            <span class="cfo__scan-word" data-scramble-text="CONTRACT">CONTRACT</span>
+          </div>
+        </div>
       </div>
-      <!-- micro — JetBrains Mono / 12px / 190% / +5% -->
-      <div style="font-family:var(--mono);font-size:0.75rem;line-height:1.9;letter-spacing:0.05em;color:var(--muted);margin-top:auto;opacity:0.85">
-        Built for enterprises with complex contracts, fragmented systems, and high-stakes revenue operations.
-      </div>
-    </div>
 
-    <!-- col 2: integrations -->
-    <div class="panel-col">
-      <div class="colophon">
-        NetSuite · SAP · Oracle · Salesforce<br>
-        Stripe · Zuora · Chargebee · ServiceNow
-      </div>
-    </div>
+      <header class="cfo__panel-head">
+        <div class="cfo__panel-head-left">
+          <span class="cfo__panel-mark" aria-hidden="true"></span>
+          <span class="type-terms cfo__panel-kicker">For the CFO</span>
+        </div>
+        <div class="cfo__panel-head-right" aria-hidden="true">
+          <span class="type-terms">RVRN · Rev. Integrity Platform</span>
+          <span class="type-terms">Q4 FY26</span>
+        </div>
+      </header>
 
-    <!-- col 3: telemetry -->
-    <div class="panel-col" style="text-align:right;justify-content:space-between">
-      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--muted);letter-spacing:0.08em">© 2026</div>
-      <div class="telemetry">
-        RENDER: <span id="render-ms">0.0</span>ms<br>
-        X: <span id="mouse-x">0</span> Y: <span id="mouse-y">0</span><br>
-        LEAKAGE: <span id="leakage-pct">—</span>
+      <div class="cfo__panel-split">
+        <div class="cfo__main">
+          <div class="cfo__main-inner">
+            <!-- Micro data row -->
+            <div class="cfo__micro-row" aria-hidden="true">
+              <span class="type-terms">Revorion</span>
+              <span class="type-terms">Contract-to-invoice reconciliation</span>
+              <span class="type-terms">Continuous</span>
+            </div>
+
+            <h2 class="type-h1 cfo__title">Your invoicing does not reflect your contracts.</h2>
+            <p class="type-body cfo__lede" style="color:var(--moss)">If you are closing the books while wondering whether your invoicing reflects your contracts, you do not have a reporting problem. You have a control problem. Revorion gives you continuous visibility across every contract, every invoice, and every gap between them.</p>
+            <div class="cfo__foot">
+              <a href="#get-started" class="btn-secondary">Book a Demo →</a>
+            </div>
+          </div>
+        </div>
+
+        <aside class="cfo__stub">
+          <div class="cfo__stub-inner">
+            <p class="type-terms cfo__stub-label">What Revorion helps you achieve</p>
+            <ul class="cfo__list" role="list">
+              <li class="cfo__item">
+                <span class="type-terms cfo__num">01</span>
+                <span class="type-body cfo__text">Protect topline revenue</span>
+              </li>
+              <li class="cfo__item">
+                <span class="type-terms cfo__num">02</span>
+                <span class="type-body cfo__text">Improve billing accuracy</span>
+              </li>
+              <li class="cfo__item">
+                <span class="type-terms cfo__num">03</span>
+                <span class="type-body cfo__text">Reduce manual audit work</span>
+              </li>
+              <li class="cfo__item">
+                <span class="type-terms cfo__num">04</span>
+                <span class="type-body cfo__text">Strengthen internal controls</span>
+              </li>
+              <li class="cfo__item">
+                <span class="type-terms cfo__num">05</span>
+                <span class="type-body cfo__text">Create a repeatable recovery process</span>
+              </li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+      <div class="cfo__stub-meta" aria-hidden="true">
+        <span class="type-terms">2–5% avg. leakage detected</span>
+        <span class="type-terms">30-day recovery cycle</span>
+      </div>
+
+      <footer class="cfo__panel-foot" aria-hidden="true">
+        <div class="cfo__panel-foot-left">
+          <span class="type-terms">SYS.STATUS</span>
+          <span class="type-terms cfo__foot-dim">ACTIVE</span>
+          <span class="type-terms cfo__foot-sep">·</span>
+          <span class="type-terms cfo__foot-dim">PASS 3/3</span>
+        </div>
+        <div class="cfo__panel-foot-right">
+          <span class="type-terms cfo__foot-dim">CHECKSUM A7F2</span>
+          <span class="type-terms cfo__foot-sep">·</span>
+          <span class="type-terms cfo__foot-dim">NODE RVRN-01</span>
+          <span class="type-terms cfo__foot-sep">·</span>
+          <span class="type-terms cfo__foot-dim">FY26-Q4</span>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- Product: pojavljuje se u blur zoni nakon što CFO panel ode gore -->
+  <div class="cfo__product-overlay" id="product">
+    <div class="container">
+      <!-- Decorative micrographics -->
+      <div class="product-micro product-micro--tl" aria-hidden="true">
+        <span class="type-terms">REVENUE RECONCILIATION</span>
+        <span class="type-terms product-micro__dim">CONTINUOUS SCAN</span>
+      </div>
+      <div class="product-micro product-micro--tr" aria-hidden="true">
+        <span class="type-terms">#RVRN</span>
+        <span class="type-terms product-micro__dim">#SYS</span>
+      </div>
+      <div class="product-micro product-micro--mr" aria-hidden="true">
+        <span class="product-micro__crosshair"><svg width="16" height="16" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="9" stroke="currentColor" stroke-width="1"/><line x1="14" y1="0" x2="14" y2="28" stroke="currentColor" stroke-width="1"/><line x1="0" y1="14" x2="28" y2="14" stroke="currentColor" stroke-width="1"/></svg></span>
+      </div>
+      <div class="product-micro product-micro--vert" aria-hidden="true">
+        <span class="product-micro__vline"></span>
+        <span class="type-terms">RECONCILE</span>
+        <span class="product-micro__vline product-micro__vline--long"></span>
+      </div>
+      <div class="product-micro product-micro--ml" aria-hidden="true">
+        <span class="type-terms product-micro__dim">CHECKSUM</span>
+        <span class="type-terms">A7F2</span>
+      </div>
+      <div class="product-micro product-micro--br" aria-hidden="true">
+        <span class="type-terms product-micro__dim">FY26-Q4</span>
+      </div>
+      <div class="sec__label sec__label--inv">
+        <div class="sec__dot" aria-hidden="true"></div>
+        <span class="type-terms">Product</span>
+        <span class="type-terms sec__label-micro" aria-hidden="true">RVRN · 5 CAPABILITIES</span>
+      </div>
+      <div class="sec__header">
+        <h2 class="type-h1">One system to find, explain, and recover missed revenue.</h2>
+        <p class="type-body">Revorion connects to your ERP, billing systems, CRM, contract repository, and operational data. It reads what was contractually agreed, compares that to what was invoiced, and flags exactly where revenue leaked.</p>
+      </div>
+      <div class="product__grid" role="list">
+        <div class="product__item" role="listitem">
+          <span class="type-terms product__item-num">01</span>
+
+          <p class="type-body product__item-title">Continuous leakage monitor</p>
+          <p class="type-body product__item-body">Real-time detection across every connected system, running 24/7 without manual intervention.</p>
+        </div>
+        <div class="product__item" role="listitem">
+          <span class="type-terms product__item-num">02</span>
+
+          <p class="type-body product__item-title">Line-by-line audit trail</p>
+          <p class="type-body product__item-body">Every discrepancy traced back to the exact contract clause, invoice line, and system of record.</p>
+        </div>
+        <div class="product__item" role="listitem">
+          <span class="type-terms product__item-num">03</span>
+
+          <p class="type-body product__item-title">Prioritized by dollar value</p>
+          <p class="type-body product__item-body">Findings ranked by expected financial impact and confidence score so you act on what matters most.</p>
+        </div>
+        <div class="product__item" role="listitem">
+          <span class="type-terms product__item-num">04</span>
+
+          <p class="type-body product__item-title">Resolve through Jira, Slack, or email</p>
+          <p class="type-body product__item-body">Route findings to the right team with full context. No new workflow required.</p>
+        </div>
+        <div class="product__item" role="listitem">
+          <span class="type-terms product__item-num">05</span>
+
+          <p class="type-body product__item-title">Historical recovery record</p>
+          <p class="type-body product__item-body">Full audit-ready record of every finding, every action, and every dollar recovered.</p>
+        </div>
       </div>
     </div>
   </div>
-</div><!-- /hero -->
 
-<!-- ─── TICKER ───────────────────────────────────── -->
-<div class="ticker" aria-hidden="true">
-  <div class="ticker__track">
-    <span class="ticker__item"><b>—</b>Finance</span>
-    <span class="ticker__item"><b>—</b>RevOps</span>
-    <span class="ticker__item"><b>—</b>Billing</span>
-    <span class="ticker__item"><b>—</b>Internal Audit</span>
-    <span class="ticker__item"><b>—</b>Contract Operations</span>
-    <span class="ticker__item"><b>—</b>CFO Office</span>
-    <span class="ticker__item"><b>—</b>Revenue Integrity</span>
-    <span class="ticker__item"><b>—</b>NetSuite</span>
-    <span class="ticker__item"><b>—</b>SAP</span>
-    <span class="ticker__item"><b>—</b>Salesforce</span>
-    <span class="ticker__item"><b>—</b>Stripe</span>
-    <span class="ticker__item"><b>—</b>Zuora</span>
-    <span class="ticker__item"><b>—</b>Finance</span>
-    <span class="ticker__item"><b>—</b>RevOps</span>
-    <span class="ticker__item"><b>—</b>Billing</span>
-    <span class="ticker__item"><b>—</b>Internal Audit</span>
-    <span class="ticker__item"><b>—</b>Contract Operations</span>
-    <span class="ticker__item"><b>—</b>CFO Office</span>
-    <span class="ticker__item"><b>—</b>Revenue Integrity</span>
-    <span class="ticker__item"><b>—</b>NetSuite</span>
-    <span class="ticker__item"><b>—</b>SAP</span>
-    <span class="ticker__item"><b>—</b>Salesforce</span>
-    <span class="ticker__item"><b>—</b>Stripe</span>
-    <span class="ticker__item"><b>—</b>Zuora</span>
-  </div>
-</div>
+</section>
 
-<!-- ─── 03 / PROBLEM ─────────────────────────────── -->
-<div class="problem reveal">
-  <div class="problem__head">
-    <div class="problem__head-label">03 / The Problem</div>
-    <div class="problem__head-body">
-      <p>Revenue leakage is rarely one big mistake.</p>
-      <p>It is thousands of small failures hidden across contracts, systems, and teams — invisible until the money is already gone.</p>
+<!-- ─── PROCESS ──────────────────────────────────────── -->
+<section class="sec sec--chalk" id="process">
+  <div class="container">
+    <div class="sec__label">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">Process</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">FLOW · 05 STEPS</span>
     </div>
-  </div>
-  <div class="problem__steps">
-    <div class="problem__step">
-      <div class="problem__step-num">01</div>
-      <div class="problem__step-text">Discounts applied incorrectly</div>
-    </div>
-    <div class="problem__step">
-      <div class="problem__step-num">02</div>
-      <div class="problem__step-text">Contract terms not reflected in invoices</div>
-    </div>
-    <div class="problem__step">
-      <div class="problem__step-num">03</div>
-      <div class="problem__step-text">Usage not billed</div>
-    </div>
-    <div class="problem__step">
-      <div class="problem__step-num">04</div>
-      <div class="problem__step-text">Renewals missed</div>
-    </div>
-    <div class="problem__step">
-      <div class="problem__step-num">05</div>
-      <div class="problem__step-text">Escalators never triggered</div>
-    </div>
-    <div class="problem__step">
-      <div class="problem__step-num">06</div>
-      <div class="problem__step-text">Credits issued without policy checks</div>
-    </div>
-    <div class="problem__step">
-      <div class="problem__step-num">07</div>
-      <div class="problem__step-text">Manual workarounds that become permanent</div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── 04 / CFO ──────────────────────────────────── -->
-<div class="cfo reveal" id="cfo">
-  <div class="wrap">
-    <div class="cfo__inner">
-      <div>
-        <div class="sh__label">04 / For the CFO</div>
-        <h2 class="sh__h">Your invoicing does not reflect your contracts. That is a control problem.</h2>
-        <p class="sh__sub" style="margin-top:1.5rem">If you are closing the books while wondering whether your invoicing reflects your contracts, you do not have a reporting problem. You have a control problem.</p>
+    <h2 class="type-h1" style="margin-bottom:56px">Five steps from<br>contract to<br>recovered revenue.</h2>
+    <div class="process__list" role="list">
+      <div class="process__row" role="listitem">
+        <span class="type-terms process__num">01</span>
+        <p class="type-step-title process__title">Ingest your source systems</p>
+        <p class="type-body process__body">We connect to your source systems such as NetSuite, SAP, Oracle, Salesforce, Stripe, Zuora, Chargebee, and your contract repository. We integrate with your ERP, CRM, billing, CPQ, payments, and usage data.</p>
       </div>
-      <ul class="cfo__list">
-        <li class="cfo__item"><span class="cfo__num">01</span><span class="cfo__text">Protect topline revenue</span></li>
-        <li class="cfo__item"><span class="cfo__num">02</span><span class="cfo__text">Improve billing accuracy</span></li>
-        <li class="cfo__item"><span class="cfo__num">03</span><span class="cfo__text">Reduce manual audit work</span></li>
-        <li class="cfo__item"><span class="cfo__num">04</span><span class="cfo__text">Strengthen internal controls</span></li>
-        <li class="cfo__item"><span class="cfo__num">05</span><span class="cfo__text">Create a repeatable recovery process</span></li>
+      <div class="process__row" role="listitem">
+        <span class="type-terms process__num">02</span>
+        <p class="type-step-title process__title">Understand the commercial truth</p>
+        <p class="type-body process__body">AI extracts pricing terms, escalators, service levels, minimums, rebates, amendments, and exceptions from your contracts.</p>
+      </div>
+      <div class="process__row" role="listitem">
+        <span class="type-terms process__num">03</span>
+        <p class="type-step-title process__title">Reconcile promise vs. reality</p>
+        <p class="type-body process__body">Contract terms compared against operational delivery and invoice outcomes. To date, we're able to find 98% of mismatches — unlike traditional reconciliation tools that miss exceptions and edge cases.</p>
+      </div>
+      <div class="process__row" role="listitem">
+        <span class="type-terms process__num">04</span>
+        <p class="type-step-title process__title">Surface recoverable revenue</p>
+        <p class="type-body process__body">Every finding ranked by expected financial impact, confidence score, root cause, and assigned owner.</p>
+      </div>
+      <div class="process__row" role="listitem">
+        <span class="type-terms process__num">05</span>
+        <p class="type-step-title process__title">Drive resolution</p>
+        <p class="type-body process__body">We can route findings to Jira, Slack, ServiceNow, or email with complete findings for your team to execute. We can also custom-design resolution bots for your specific workflow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── USE CASES ────────────────────────────────────── -->
+<section class="sec sec--ink" id="use-cases">
+  <div class="container">
+    <div class="sec__label sec__label--inv">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">Use Cases</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">INDEX · 07 TYPES</span>
+    </div>
+    <div class="sec__header">
+      <h2 class="type-h1">Common leakage<br>we catch.</h2>
+      <p class="type-body usecases__header-intro">Every leakage type has a pattern. Revorion sees them all, across industries and system stacks.</p>
+    </div>
+    <div class="usecases__grid" role="list">
+      <div class="uc__item" role="listitem">
+        <span class="type-terms uc__num">01</span>
+        <p class="type-body uc__title">Contract-to-bill mismatches</p>
+        <p class="type-body uc__desc">Invoice terms do not match the signed agreement.</p>
+      </div>
+      <div class="uc__item" role="listitem">
+        <span class="type-terms uc__num">02</span>
+        <p class="type-body uc__title">Missed escalators and indexation</p>
+        <p class="type-body uc__desc">Rate increases or volume pricing updates never applied.</p>
+      </div>
+      <div class="uc__item" role="listitem">
+        <span class="type-terms uc__num">03</span>
+        <p class="type-body uc__title">Unbilled usage or services</p>
+        <p class="type-body uc__desc">Delivery happened. Billing never did.</p>
+      </div>
+      <div class="uc__item" role="listitem">
+        <span class="type-terms uc__num">04</span>
+        <p class="type-body uc__title">Renewal and amendment errors</p>
+        <p class="type-body uc__desc">Renewed terms not reflected in downstream systems.</p>
+      </div>
+      <div class="uc__item" role="listitem">
+        <span class="type-terms uc__num">05</span>
+        <p class="type-body uc__title">Pricing and discount drift</p>
+        <p class="type-body uc__desc">Unauthorized discounts or outdated pricing tables.</p>
+      </div>
+      <div class="uc__item" role="listitem">
+        <span class="type-terms uc__num">06</span>
+        <p class="type-body uc__title">Credit and rebate leakage</p>
+        <p class="type-body uc__desc">Credits issued outside policy or rebates calculated incorrectly.</p>
+      </div>
+      <div class="uc__item" role="listitem">
+        <span class="type-terms uc__num">07</span>
+        <p class="type-body uc__title">Entitlement and over-service</p>
+        <p class="type-body uc__desc">Customers receive more than they purchased.</p>
+      </div>
+    </div>
+    <div class="usecases__more">
+      <a href="industries.html" class="btn-ghost">See how revenue leakage shows up in your industry →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── OUTCOMES ─────────────────────────────────────── -->
+<section class="sec sec--chalk" id="outcomes">
+  <div class="container">
+    <div class="sec__label">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">Outcomes</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">DELTA · 03 METRICS</span>
+    </div>
+    <h2 class="type-h1">What changes<br>when you<br>stop guessing.</h2>
+    <div class="outcomes__grid" role="list">
+
+      <div class="out__item" role="listitem">
+        <p class="type-stat out__stat">2–5%</p>
+        <div class="out__divider" aria-hidden="true"></div>
+        <p class="type-step-title out__title">Recover earned revenue</p>
+        <p class="type-body out__body">Of annual contracted revenue identified as recoverable in the first 30 days.</p>
+      </div>
+
+      <div class="out__item" role="listitem">
+        <p class="type-stat out__stat">Weeks → hours</p>
+        <div class="out__divider" aria-hidden="true"></div>
+        <p class="type-step-title out__title">Replace manual reconciliation</p>
+        <p class="type-body out__body">The quarterly spreadsheet audit completed in hours. Not weeks, not days.</p>
+      </div>
+
+      <div class="out__item" role="listitem">
+        <p class="type-stat out__stat">One source of truth</p>
+        <div class="out__divider" aria-hidden="true"></div>
+        <p class="type-step-title out__title">Single view</p>
+        <p class="type-body out__body">Finance, audit, and revenue teams work from the same data, in real time.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── ENTERPRISE ───────────────────────────────────── -->
+<section class="sec sec--chalk" id="enterprise">
+  <div class="container">
+    <div class="enterprise__labels-row">
+      <div class="sec__label">
+        <div class="sec__dot" aria-hidden="true"></div>
+        <span class="type-terms">Enterprise</span>
+      </div>
+      <div class="sec__label">
+        <div class="sec__dot" aria-hidden="true"></div>
+        <span class="type-terms">Live audit log</span>
+        <span class="type-terms sec__label-micro" aria-hidden="true">STREAM · LIVE</span>
+      </div>
+    </div>
+    <div class="enterprise__grid">
+
+      <div class="enterprise__lead">
+        <h2 class="type-h1 enterprise__heading">Designed for sensitive data.</h2>
+        <p class="type-body enterprise__intro">Built for complex permissions, rigorous review processes, and enterprise security requirements.</p>
+      </div>
+
+      <ul class="enterprise__list" role="list">
+        <li class="enterprise__item">
+          <span class="type-terms enterprise__num">01</span>
+          <span class="type-body enterprise__text">Role-based access controls with approval workflows</span>
+        </li>
+        <li class="enterprise__item">
+          <span class="type-terms enterprise__num">02</span>
+          <span class="type-body enterprise__text">Full audit trails on every finding, every action, every resolution</span>
+        </li>
+        <li class="enterprise__item">
+          <span class="type-terms enterprise__num">03</span>
+          <span class="type-body enterprise__text">Human-review workflows — the AI surfaces, you decide</span>
+        </li>
+        <li class="enterprise__item">
+          <span class="type-terms enterprise__num">04</span>
+          <span class="type-body enterprise__text">Flexible deployment: cloud or dedicated infrastructure</span>
+        </li>
+        <li class="enterprise__item">
+          <span class="type-terms enterprise__num">05</span>
+          <span class="type-body enterprise__text">Pre-built connectors built, or we can build custom connectors</span>
+        </li>
       </ul>
-    </div>
-  </div>
-</div>
 
-<!-- ─── 05 / PRODUCT ─────────────────────────────── -->
-<div class="product reveal" id="product">
-  <div class="wrap">
-    <div class="sh__label">05 / Product</div>
-    <h2 class="sh__h">One system to find, explain, and recover missed revenue.</h2>
-    <p class="sh__sub" style="max-width:52rem">Revorion connects to your ERP, billing systems, CRM, contract repository, and operational data. It reads what was contractually agreed, compares that to what was actually invoiced and delivered, and flags the exact places where revenue leaked.</p>
-    <div class="product__grid">
-      <div class="product__card"><div class="product__num">01</div><div class="product__title">Continuous leakage monitor</div></div>
-      <div class="product__card"><div class="product__num">02</div><div class="product__title">Line-by-line audit trail</div></div>
-      <div class="product__card"><div class="product__num">03</div><div class="product__title">Prioritized by dollar value</div></div>
-      <div class="product__card"><div class="product__num">04</div><div class="product__title">Resolve through Jira, Slack, or email</div></div>
-      <div class="product__card"><div class="product__num">05</div><div class="product__title">Historical recovery record</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── 06 / PROCESS ─────────────────────────────── -->
-<div class="process reveal" id="how-it-works">
-  <div class="wrap">
-    <div class="sh__label sh__label--inv">06 / Process</div>
-    <h2 class="sh__h" style="color:var(--cream)">Five steps from contract to recovered revenue.</h2>
-    <div class="process__steps">
-      <div class="process__step"><div class="process__step-num">01</div><div><h3 class="process__step-title">Ingest your source systems</h3><p class="process__step-desc">Connect NetSuite, SAP, Oracle, Salesforce, Stripe, Zuora, Chargebee, and your contract repository. ERP, CRM, billing, CPQ, payments, and usage data in one place.</p></div></div>
-      <div class="process__step"><div class="process__step-num">02</div><div><h3 class="process__step-title">Understand the commercial truth</h3><p class="process__step-desc">AI extracts pricing terms, escalators, service levels, minimums, rebates, amendments, and exceptions from your contracts and related documents.</p></div></div>
-      <div class="process__step"><div class="process__step-num">03</div><div><h3 class="process__step-title">Reconcile promise vs. reality</h3><p class="process__step-desc">Contract terms compared against operational delivery and invoice outcomes. Every mismatch detected and categorized.</p></div></div>
-      <div class="process__step"><div class="process__step-num">04</div><div><h3 class="process__step-title">Surface recoverable revenue</h3><p class="process__step-desc">Every finding ranked by expected financial impact, confidence score, root cause, and assigned owner. No false-positive noise.</p></div></div>
-      <div class="process__step"><div class="process__step-num">05</div><div><h3 class="process__step-title">Drive resolution</h3><p class="process__step-desc">Route findings to Jira, Slack, ServiceNow, or email. Or resolve directly inside the platform. Reconciliation that takes weeks manually, completed in minutes.</p></div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── 07 / USE CASES ───────────────────────────── -->
-<div class="usecases reveal" id="use-cases">
-  <div class="wrap">
-    <div class="sh__label">07 / Use Cases</div>
-    <h2 class="sh__h">Common leakage we catch.</h2>
-    <div class="usecases__grid">
-      <div class="uc__card"><div class="uc__num">01</div><div class="uc__title">Contract-to-bill mismatches</div><p class="uc__desc">Invoice terms do not match the signed agreement.</p></div>
-      <div class="uc__card"><div class="uc__num">02</div><div class="uc__title">Missed escalators and indexation</div><p class="uc__desc">Rate increases, annual step-ups, or volume pricing updates never applied.</p></div>
-      <div class="uc__card"><div class="uc__num">03</div><div class="uc__title">Unbilled usage or services</div><p class="uc__desc">Delivery happened. Billing never did.</p></div>
-      <div class="uc__card"><div class="uc__num">04</div><div class="uc__title">Renewal and amendment errors</div><p class="uc__desc">Renewed terms not reflected in downstream systems.</p></div>
-      <div class="uc__card"><div class="uc__num">05</div><div class="uc__title">Pricing and discount drift</div><p class="uc__desc">Unauthorized discounts, stale pricing tables, or outdated customer-specific terms.</p></div>
-      <div class="uc__card"><div class="uc__num">06</div><div class="uc__title">Credit and rebate leakage</div><p class="uc__desc">Credits issued outside policy or rebates calculated incorrectly.</p></div>
-      <div class="uc__card"><div class="uc__num">07</div><div class="uc__title">Entitlement and over-service</div><p class="uc__desc">Customers receive more than they purchased. No revenue recognition path exists.</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── 08 / OUTCOMES ────────────────────────────── -->
-<div class="outcomes reveal">
-  <div class="wrap">
-    <div class="sh__label">08 / Outcomes</div>
-    <h2 class="sh__h">What changes when you stop guessing.</h2>
-    <div class="outcomes__grid">
-      <div class="out__card"><div class="out__metric">2–5%</div><div class="out__title">Recover earned revenue</div><p class="out__desc">Of annual contracted revenue identified as recoverable. Found, quantified, and prioritized by dollar value.</p></div>
-      <div class="out__card"><div class="out__metric">[X]x ROI</div><div class="out__title">Proven in 30 days</div><p class="out__desc">Pilot ROI demonstrated within the first month. Recovery pays for the platform.</p></div>
-      <div class="out__card"><div class="out__metric">Weeks → hours</div><div class="out__title">Replace manual reconciliation</div><p class="out__desc">The quarterly spreadsheet audit completed in hours. Every finding auditable, every conclusion explainable.</p></div>
-      <div class="out__card"><div class="out__metric">[X] systems</div><div class="out__title">One source of truth</div><p class="out__desc">Finance, audit, and revenue teams work from the same data. No conflicting spreadsheets.</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── INFOGRAPHIC ──────────────────────────────── -->
-<div class="infographic reveal">
-  <div class="wrap">
-    <div class="sh__label sh__label--inv" style="margin-bottom:2.5rem">Revenue leakage / Radial breakdown</div>
-    <div class="infographic__inner">
-      <canvas id="radial-canvas"></canvas>
-      <div id="legend"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── 09 / ENTERPRISE ──────────────────────────── -->
-<div class="enterprise reveal" id="enterprise">
-  <div class="wrap">
-    <div class="sh__label">09 / Enterprise</div>
-    <h2 class="sh__h">Designed for sensitive financial data.</h2>
-    <div class="enterprise__inner">
-      <div>
-        <ul class="enterprise__list">
-          <li class="enterprise__item"><span class="enterprise__item-num">01</span><span>Role-based access controls with approval workflows for recovery actions</span></li>
-          <li class="enterprise__item"><span class="enterprise__item-num">02</span><span>Full audit trails on every finding, every action, every resolution</span></li>
-          <li class="enterprise__item"><span class="enterprise__item-num">03</span><span>Human-review workflows. The AI surfaces. You decide.</span></li>
-          <li class="enterprise__item"><span class="enterprise__item-num">04</span><span>Flexible deployment: cloud or dedicated infrastructure</span></li>
-          <li class="enterprise__item"><span class="enterprise__item-num">05</span><span>Pre-built connectors for NetSuite, SAP, Oracle, Salesforce, Stripe, Zuora</span></li>
-        </ul>
-        <p class="enterprise__note">SOC 2 Type II [in progress] · Data encrypted at rest and in transit</p>
+      <div class="enterprise__terminal-shell">
+        <div class="terminal type-micro" id="terminal-log" role="log" aria-live="polite" aria-label="Live audit log"></div>
       </div>
-      <div>
-        <div class="sh__label" style="margin-bottom:0.75rem">Live audit log</div>
-        <div class="terminal" id="terminal-log" aria-live="polite"></div>
-      </div>
+
+      <p class="type-terms enterprise__note">SOC 2 Type II [in progress] · Data encrypted at rest and in transit</p>
+
     </div>
   </div>
-</div>
+</section>
 
-<!-- ─── CTA ──────────────────────────────────────── -->
-<div class="cta" id="demo">
-  <div class="wrap">
-    <h2 class="cta__h">Revenue leakage<br>compounds.<br>So does recovery.</h2>
-    <p class="cta__sub">Find the revenue your systems are missing.</p>
-    <p class="cta__note">A 3% leakage rate at $50M ARR is $125K lost every month you wait.</p>
+<!-- ─── GET STARTED ──────────────────────────────────── -->
+<section class="sec sec--ink" id="get-started">
+  <div class="container">
+    <div class="sec__label sec__label--inv">
+      <div class="sec__dot" aria-hidden="true"></div>
+      <span class="type-terms">Get Started</span>
+      <span class="type-terms sec__label-micro" aria-hidden="true">NEXT · BOOK</span>
+    </div>
+    <h2 class="type-h1 cta__heading">Revenue leakage<br>compounds.<br>So does recovery.</h2>
+    <p class="type-body cta__sub">Find the revenue your systems are missing.</p>
+    <p class="type-terms cta__note">A 3% leakage rate at $50M ARR is $125K lost every month you wait.</p>
     <div class="cta__actions">
-      <a href="#" class="btn btn-primary">Book a demo</a>
-      <a href="#" class="btn btn-secondary">Talk to our team</a>
+      <a href="contact.html" class="btn-primary-light">Book a Demo →</a>
     </div>
   </div>
-</div>
+</section>
 
-<!-- ─── FOOTER ───────────────────────────────────── -->
-<footer class="footer">
-  <div class="wrap">
-    <div class="footer__inner">
-      <div>
-        <div class="footer__brand">REVORION ✦</div>
-        <p class="footer__tagline">Stop revenue leakage before it hits the ledger. AI for finance teams who need revenue they can trust.</p>
+<!-- ─── FOOTER ───────────────────────────────────────── -->
+<footer class="footer" id="contact">
+  <div class="container">
+    <div class="footer__grid">
+
+      <!-- Brand col -->
+      <div class="footer__brand">
+        <svg width="221" height="141" viewBox="0 0 221 141" fill="none" xmlns="http://www.w3.org/2000/svg" class="footer__logo-svg" aria-label="Revorion">
+          <path d="M155.937 119.006C155.924 116.204 158.184 113.922 160.985 113.909L176.197 113.838C178.998 113.825 181.279 116.085 181.292 118.887L181.363 134.108C181.376 136.91 179.117 139.192 176.316 139.205L161.103 139.276C158.303 139.289 156.022 137.028 156.009 134.226L155.937 119.006Z" fill="currentColor"/>
+          <path d="M47.4726 39.447C49.7433 39.4347 139.258 40.0575 142.274 40.1137L142.274 40.119L174.894 39.9664C178.205 39.9509 180.901 42.6243 180.916 45.9376L181.04 81.4963C181.05 84.368 179.922 87.1264 177.902 89.1665L154.118 113.196C152.945 114.382 151.35 115.053 149.682 115.064L142.625 115.11C142.625 115.11 48.4847 114.399 45.7894 114.41L25.7911 114.479L25.8494 133.745C25.8579 136.544 23.7627 138.821 21.166 138.834L5.44005 138.913C2.84027 138.926 0.721101 136.666 0.705987 133.864L0.662595 125.745C0.626344 119.723 -0.140241 115.641 4.33464 110.83C8.36775 106.888 12.3208 102.8 16.3462 98.8405C18.8012 96.4638 21.0725 93.8345 23.8095 91.7742C27.2306 89.1997 31.9145 89.5864 35.982 89.5732L44.9135 89.5461C47.4811 89.5391 142.509 90.2769 142.509 90.2769L142.509 90.2667L150.846 90.2277C153.859 90.2136 156.291 87.7573 156.277 84.7413L156.209 70.3585C156.195 67.3425 153.741 64.909 150.728 64.9231L142.39 64.9621L142.39 64.982C138.888 64.8318 47.2381 64.3891 44.4437 64.3413C40.2638 64.494 36.0101 64.1761 31.8378 64.4134C25.0384 64.8001 25.5103 70.3713 25.5671 75.1657L25.6531 82.4393C25.6702 84.0586 25.81 85.8583 25.0306 87.3412C24.4984 88.3542 23.6178 89.0188 22.5271 89.3403C20.7888 89.8522 7.17505 89.9189 4.94736 89.6862C4.16675 89.6049 3.35915 89.4095 2.67091 89.0216C1.69389 88.4726 0.983544 87.6558 0.705202 86.5572C0.357024 85.1837 0.245968 70.673 0.431689 68.952C0.511888 68.2091 0.718178 67.5011 1.12654 66.8679C1.70383 65.9727 2.59464 65.3751 3.60778 65.0771C5.02964 64.6589 6.63995 64.7846 8.10926 64.7827C11.4616 64.7781 17.8335 65.141 20.8875 64.497C26.6731 63.277 26.2987 58.286 26.2554 53.6293L26.1838 46.0194C26.1457 41.5168 27.0954 40.2324 31.7877 39.5929C32.3006 39.5228 33.4546 39.5069 34.0063 39.5011L47.4726 39.447Z" fill="currentColor"/>
+          <path d="M200.066 0.092345L202.012 6.35414C203.668 11.6826 207.864 15.8396 213.207 17.4452L219.487 19.332L213.225 21.2775C207.897 22.9331 203.74 27.1291 202.134 32.4729L200.247 38.7526L198.302 32.4908C196.646 27.1623 192.45 23.0053 187.107 21.3997L180.827 19.5129L187.089 17.5674C192.417 15.9119 196.574 11.7158 198.18 6.37208L200.066 0.092345Z" fill="currentColor"/>
+        </svg>
       </div>
+
+      <!-- Product col -->
       <div class="footer__col">
-        <h4>Product</h4>
-        <a href="#product" class="footer__link">Product</a>
-        <a href="#how-it-works" class="footer__link">How It Works</a>
+        <span class="type-terms footer__col-head">Product</span>
+        <a href="#process" class="footer__link">How It Works</a>
         <a href="#use-cases" class="footer__link">Use Cases</a>
+        <a href="#product" class="footer__link">Integrations</a>
         <a href="#enterprise" class="footer__link">Enterprise</a>
       </div>
+
+      <!-- Industries col -->
       <div class="footer__col">
-        <h4>Company</h4>
-        <a href="#" class="footer__link">About</a>
-        <a href="#" class="footer__link">Careers</a>
-        <a href="#" class="footer__link">Contact</a>
+        <span class="type-terms footer__col-head">Industries</span>
+        <span class="type-terms footer__col-sub" style="color:rgba(247,247,247,0.3)">Tier 01</span>
+        <a href="#" class="footer__link">Finance &amp; Insurance</a>
+        <a href="#" class="footer__link">Technology &amp; SaaS</a>
+        <a href="#" class="footer__link">Manufacturing</a>
+        <span class="type-terms footer__col-sub" style="color:rgba(247,247,247,0.3);margin-top:8px">Tier 02</span>
+        <a href="#" class="footer__link">Healthcare</a>
+        <a href="#" class="footer__link">Professional Services</a>
       </div>
+
+      <!-- Company col -->
       <div class="footer__col">
-        <h4>Legal</h4>
+        <span class="type-terms footer__col-head">Company</span>
+        <a href="#" class="footer__link">About</a>
+        <a href="#contact" class="footer__link">Contact</a>
+        <a href="#" class="footer__link">Careers</a>
+      </div>
+
+      <!-- Legal col -->
+      <div class="footer__col">
+        <span class="type-terms footer__col-head">Legal</span>
         <a href="#" class="footer__link">Privacy Policy</a>
         <a href="#" class="footer__link">Terms of Service</a>
         <a href="#" class="footer__link">Security</a>
       </div>
+
     </div>
     <div class="footer__bottom">
-      <span>© 2026 Revorion. All rights reserved.</span>
-      <span>[ REVENUE RECOVERY INTELLIGENCE ]</span>
+      <span class="type-terms">© 2026 Revorion. All rights reserved.</span>
+      <span class="type-terms">Revorion.ai</span>
     </div>
   </div>
 </footer>
 
-<!-- ════════════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/gh/bradley/Blotter@master/build/blotter.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/bradley/Blotter@master/build/materials/channelSplitMaterial.js" defer></script>
+<script src="scripts/cfo-invoice-scramble.js" defer></script>
+<script src="scripts/home-parallax.js" defer></script>
 <script>
-/* ── NAV: scroll glass + active section + magnetic CTA ── */
-(function(){
-  const nav = document.getElementById('main-nav');
+/* ── Theme color helpers (canvas use) ────────────── */
+function revorionParseHexRgb(hex){
+  const h = String(hex).replace('#','').trim();
+  if(h.length !== 6) return [15,15,13];
+  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+}
+function revorionTokenRgb(prop){
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+  if(raw.startsWith('#')) return revorionParseHexRgb(raw);
+  const m = raw.match(/(\d+)\s+(\d+)\s+(\d+)/);
+  if(m) return [+m[1],+m[2],+m[3]];
+  return revorionParseHexRgb('#0f0f0d');
+}
+function revorionRgba(prop, a){
+  const t = revorionTokenRgb(prop);
+  return 'rgba('+t[0]+','+t[1]+','+t[2]+','+a+')';
+}
 
-  // scroll → frosted glass
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-  }, { passive:true });
-
-  // active section indicator
-  const sections = document.querySelectorAll('[id]');
-  const navItems = document.querySelectorAll('.main-nav__item');
-  const sectionMap = { product:'product', 'use-cases':'use-cases', enterprise:'enterprise' };
-  const ioNav = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if(e.isIntersecting){
-        navItems.forEach(li => {
-          const a = li.querySelector('a');
-          const match = a.getAttribute('href') === '#' + e.target.id;
-          li.classList.toggle('active', match);
-        });
-      }
-    });
-  }, { threshold:0.4 });
-  Object.keys(sectionMap).forEach(id => {
-    const el = document.getElementById(id);
-    if(el) ioNav.observe(el);
-  });
-
-  // magnetic CTA
-  const cta = document.getElementById('nav-cta');
-  const ctaWrap = cta.closest('.main-nav__cta-wrap');
-  ctaWrap.addEventListener('mousemove', e => {
-    const r = cta.getBoundingClientRect();
-    const cx = r.left + r.width/2, cy = r.top + r.height/2;
-    const dx = (e.clientX - cx) * 0.28;
-    const dy = (e.clientY - cy) * 0.28;
-    cta.style.transform = `translate(${dx}px,${dy}px)`;
-  });
-  ctaWrap.addEventListener('mouseleave', () => {
-    cta.style.transform = 'translate(0,0)';
-  });
-})();
-
-/* ── CURSOR ─────────────────────────────────────── */
+/* ── CURSOR — dot + ring same position (no lag) ──── */
 const cursorDot     = document.getElementById('cursor-dot');
 const cursorOutline = document.getElementById('cursor-outline');
 const mouse = { x:0, y:0 };
-const lag   = { x:0, y:0 };
 
 window.addEventListener('mousemove', e => {
   mouse.x = e.clientX; mouse.y = e.clientY;
-  cursorDot.style.left = e.clientX + 'px';
-  cursorDot.style.top  = e.clientY + 'px';
-  document.getElementById('mouse-x').textContent = e.clientX;
-  document.getElementById('mouse-y').textContent = e.clientY;
+  const x = e.clientX + 'px';
+  const y = e.clientY + 'px';
+  if(cursorDot){ cursorDot.style.left = x; cursorDot.style.top = y; }
+  if(cursorOutline){ cursorOutline.style.left = x; cursorOutline.style.top = y; }
 });
-(function loopCursor(){
-  lag.x += (mouse.x - lag.x) * 0.14;
-  lag.y += (mouse.y - lag.y) * 0.14;
-  cursorOutline.style.left = lag.x + 'px';
-  cursorOutline.style.top  = lag.y + 'px';
-  requestAnimationFrame(loopCursor);
+
+/* ── TICKER — world clocks ──────────────────────── */
+(function tickerClocks(){
+  const nodes = document.querySelectorAll('.ticker__time[data-tz]');
+  if(!nodes.length) return;
+  const formatters = new Map();
+  function formatInTz(now, tz){
+    let f = formatters.get(tz);
+    if(!f){
+      try {
+        f = new Intl.DateTimeFormat('en-US', {
+          timeZone: tz,
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true,
+          timeZoneName: 'short'
+        });
+        formatters.set(tz, f);
+      } catch (e) { return null; }
+    }
+    try { return f.format(now); } catch (e) { return null; }
+  }
+  function paint(){
+    const now = new Date();
+    nodes.forEach(el => {
+      const tz = el.getAttribute('data-tz');
+      const s = formatInTz(now, tz);
+      el.textContent = s != null ? s : '--:--:-- --';
+    });
+  }
+  paint();
+  setInterval(paint, 1000);
 })();
 
-/* ── TIMESTAMP ──────────────────────────────────── */
-(function tick(){
-  document.getElementById('timestamp').textContent =
-    new Date().toLocaleTimeString('en-US',{hour12:false}) + ' UTC';
-  setTimeout(tick, 1000);
-})();
-
-/* ── LEAKAGE TICKER ─────────────────────────────── */
-let leakagePct = 2.1;
-setInterval(()=>{
-  leakagePct = +(2 + Math.random()*3).toFixed(2);
-  document.getElementById('leakage-pct').textContent = leakagePct + '%';
-}, 2400);
-
-
-/* ── TEXT SCRAMBLE ──────────────────────────────── */
+/* ── TEXT SCRAMBLE ───────────────────────────────── */
 class TextScramble {
   constructor(el){
     this.el = el;
@@ -1120,30 +830,38 @@ class TextScramble {
   }
   _update(){
     let out='', done=0;
-    this.q.forEach((item,i)=>{
+    this.q.forEach((item)=>{
       if(this.frame >= item.end){ done++; out += item.to; }
       else if(this.frame >= item.start){
         if(!item.char || Math.random()<0.28)
           item.char = this.chars[Math.floor(Math.random()*this.chars.length)];
-        out += `<span style="opacity:0.4;font-family:monospace">${item.char}</span>`;
+        out += `<span style="opacity:0.4;font-family:var(--font-mono)">${item.char}</span>`;
       } else { out += item.from; }
     });
     this.el.innerHTML = out;
-    if(done === this.q.length){ this.resolve(); }
+    if(done === this.q.length){ this.resolve && this.resolve(); }
     else { this.raf = requestAnimationFrame(()=>{ this.frame++; this._update(); }); }
   }
 }
 
-/* ── ASCII CANVAS ───────────────────────────────── */
+/* ── ASCII CANVAS ────────────────────────────────── */
 (function(){
-  const canvas = document.getElementById('ascii-canvas');
-  const ctx = canvas.getContext('2d');
-  const renderEl = document.getElementById('render-ms');
+  const canvas  = document.getElementById('ascii-canvas');
+  if(!canvas) return;
+  const ctx     = canvas.getContext('2d');
+  if(!ctx) return;
   const density = " .,:;|/\\-_+~i!1lt?[]{}()ILTfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
   const charSize = 11;
   let W, H, time = 0;
-  const mouse = { x: -9999, y: -9999 };
+  const mouse  = { x: -9999, y: -9999 };
   const ripples = [];
+
+  let accentRgb = revorionTokenRgb('--accent-hot');
+  let inkRgb    = revorionTokenRgb('--color-ink');
+
+  function monoFontStack(){
+    return getComputedStyle(document.documentElement).getPropertyValue('--font-mono').trim() || 'JetBrains Mono, monospace';
+  }
 
   window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
   canvas.addEventListener('click', e => {
@@ -1155,29 +873,35 @@ class TextScramble {
     const dpr = window.devicePixelRatio || 1;
     W = canvas.offsetWidth; H = canvas.offsetHeight;
     canvas.width  = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(1,0,0,1,0,0);
     ctx.scale(dpr, dpr);
-    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
   }
-  window.addEventListener('resize', resize); resize();
+  function refreshColors(){
+    accentRgb = revorionTokenRgb('--accent-hot');
+    inkRgb    = revorionTokenRgb('--color-ink');
+  }
+  window.addEventListener('resize', () => { resize(); refreshColors(); });
+  resize(); refreshColors();
 
   function noise(x, y, t){
-    const fy = y - t * 8; /* vertical scroll: blobs fall top→bottom */
+    const fy = y - t * 8;
     return Math.sin(x * .06 + t * .2) * Math.cos(fy * .04)
          + Math.sin(x * .02 + t * .1) * Math.cos(fy * .09) * .6
          + Math.sin((x + fy) * .03) * .3;
   }
 
   function draw(){
-    const t0 = performance.now();
     ctx.clearRect(0, 0, W, H);
-    ctx.font = charSize + 'px "JetBrains Mono", monospace';
+    ctx.font = charSize + 'px ' + monoFontStack();
     ctx.textAlign = 'left'; ctx.textBaseline = 'top';
 
-    const cols = Math.ceil(W / charSize);
-    const rows = Math.ceil(H / charSize);
-    const canvasTop = canvas.getBoundingClientRect().top;
-    const mxLocal = mouse.x;
-    const myLocal = mouse.y - canvasTop;
+    const cols     = Math.ceil(W / charSize);
+    const rows     = Math.ceil(H / charSize);
+    const rect     = canvas.getBoundingClientRect();
+    const mxLocal  = mouse.x - rect.left;
+    const myLocal  = mouse.y - rect.top;
 
     for(let i = ripples.length - 1; i >= 0; i--){
       ripples[i].r = (time - ripples[i].born) * 6;
@@ -1191,215 +915,289 @@ class TextScramble {
         const cx = px + charSize * .5;
         const cy = py + charSize * .5;
 
-        let nv = noise(col, row, time);
+        const nv0 = noise(col, row, time);
 
-        const yFade = row / rows;
+        const yFade     = row / rows;
         const threshold = 0.55 - yFade * 0.75;
 
-        const dxM = cx - mxLocal;
-        const dyM = cy - myLocal;
+        const dxM   = cx - mxLocal;
+        const dyM   = cy - myLocal;
         const distM = Math.sqrt(dxM * dxM + dyM * dyM);
         const mouseR = 180;
-        if(distM < mouseR){
-          const s = 1 - distM / mouseR;
-          nv += s * 1.4;
-        }
+        const isBlob = nv0 >= threshold;
+        let nv = nv0;
+        if(distM < mouseR && isBlob){ nv += (1 - distM / mouseR) * 1.4; }
 
         for(const rip of ripples){
-          const dxR = cx - rip.x;
-          const dyR = cy - rip.y;
+          const dxR  = cx - rip.x;
+          const dyR  = cy - rip.y;
           const distR = Math.sqrt(dxR * dxR + dyR * dyR);
-          const wave = Math.abs(distR - rip.r);
+          const wave  = Math.abs(distR - rip.r);
           if(wave < 28) nv += (1 - wave / 28) * 1.2;
         }
 
         if(nv < threshold) continue;
 
         const charIdx = Math.floor(((nv + 1.5) / 3) * density.length) % density.length;
-        const ch = density[Math.max(0, Math.min(density.length - 1, charIdx))];
+        let ch = density[Math.max(0, Math.min(density.length - 1, charIdx))];
+        if(distM >= mouseR) ch = '$';
 
         let alpha = 0.08 + yFade * 0.38;
-        if(distM < mouseR) alpha = Math.min(1, alpha + (1 - distM / mouseR) * 0.7);
+        if(distM < mouseR && isBlob) alpha = Math.min(1, alpha + (1 - distM / mouseR) * 0.7);
 
-        const finalCh = (distM < mouseR * .6 && Math.random() > .55)
+        const finalCh = (distM < mouseR * .6 && isBlob && Math.random() > .55)
           ? (Math.random() > .5 ? '1' : '0') : ch;
 
-        if(distM < mouseR){
-          ctx.fillStyle = `rgba(255,61,4,${alpha.toFixed(2)})`;
+        if(distM < mouseR && isBlob){
+          ctx.fillStyle = `rgba(${accentRgb[0]},${accentRgb[1]},${accentRgb[2]},${alpha.toFixed(2)})`;
         } else {
-          ctx.fillStyle = `rgba(16,17,19,${alpha.toFixed(2)})`;
+          ctx.fillStyle = `rgba(${inkRgb[0]},${inkRgb[1]},${inkRgb[2]},${alpha.toFixed(2)})`;
         }
         ctx.fillText(finalCh, px, py);
       }
     }
 
     time += 0.012;
-    if(renderEl) renderEl.textContent = (performance.now() - t0).toFixed(1);
     requestAnimationFrame(draw);
   }
   draw();
 })();
 
-/* ── REVEAL ON SCROLL ───────────────────────────── */
-const revealObs = new IntersectionObserver(entries=>{
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-
-/* ── LEAKAGE ORB ────────────────────────────────── */
+/* ── TERMINAL LOG ────────────────────────────────── */
 (function(){
-  const c = document.getElementById('leakage-canvas');
-  const ctx = c.getContext('2d');
-  let t = 0;
-  const leaks = [
-    {pct:.32,phase:0},{pct:.21,phase:.7},{pct:.18,phase:1.4},
-    {pct:.14,phase:2.1},{pct:.09,phase:2.8},{pct:.06,phase:3.5},
+  const el = document.getElementById('terminal-log');
+  if(!el) return;
+  const lines = [
+    {c:'t-dim',  t:'[ 2026-04-02 08:00:01 ] Revorion audit engine started'},
+    {c:'t-dim',  t:'[ 08:00:04 ] Connecting to NetSuite...'},
+    {c:'t-ok',   t:'[ 08:00:06 ] NetSuite — CONNECTED (34,218 records)'},
+    {c:'t-dim',  t:'[ 08:00:07 ] Connecting to Salesforce...'},
+    {c:'t-ok',   t:'[ 08:00:09 ] Salesforce — CONNECTED (12,441 opportunities)'},
+    {c:'t-dim',  t:'[ 08:00:10 ] Loading contract repository...'},
+    {c:'t-ok',   t:'[ 08:00:13 ] Contracts ingested: 891 active agreements'},
+    {c:'t-dim',  t:'[ 08:00:14 ] Running reconciliation pass 1/3...'},
+    {c:'t-warn', t:'[ 08:00:22 ] FLAG — contract #4872: price escalator not applied (est. $43,200)'},
+    {c:'t-warn', t:'[ 08:00:23 ] FLAG — account Meridian Corp: renewal 14 days overdue'},
+    {c:'t-dim',  t:'[ 08:00:26 ] Running reconciliation pass 2/3...'},
+    {c:'t-warn', t:'[ 08:00:31 ] FLAG — 3 invoices missing usage charges (est. $18,750)'},
+    {c:'t-warn', t:'[ 08:00:32 ] FLAG — discount override outside policy: -22% on #A-0091'},
+    {c:'t-dim',  t:'[ 08:00:35 ] Running reconciliation pass 3/3...'},
+    {c:'t-ok',   t:'[ 08:00:41 ] Pass complete — 0 system errors'},
+    {c:'t-warn', t:'[ 08:00:42 ] TOTAL RECOVERABLE THIS CYCLE: $214,780'},
+    {c:'t-ok',   t:'[ 08:00:45 ] 12 tickets created. 3 high priority.'},
+    {c:'t-dim',  t:'[ 08:00:46 ] Next scheduled run: 09:00:00'},
+    {c:'t-dim',  t:'─────────────────────────────────────────────'},
   ];
-  function resize(){
-    const s = c.offsetWidth; c.width=s; c.height=s;
-  }
-  function draw(){
-    const s=c.width; ctx.clearRect(0,0,s,s);
-    const cx=s/2, cy=s/2, maxR=s*.38;
-    for(let i=0;i<4;i++){
-      ctx.save(); ctx.translate(cx,cy);
-      ctx.rotate(t*(.15+i*.07)+(i%2?Math.PI:0));
-      ctx.beginPath(); ctx.arc(0,0,maxR*(.35+i*.18),0,Math.PI*2);
-      ctx.strokeStyle=`rgba(236,239,229,${.06+i*.02})`; ctx.lineWidth=.5; ctx.stroke();
-      ctx.restore();
-    }
-    leaks.forEach((l,i)=>{
-      const ang=(i/leaks.length)*Math.PI*2-Math.PI/2+t*.05;
-      const r=maxR*(.45+l.pct*.95);
-      const x2=cx+Math.cos(ang)*r, y2=cy+Math.sin(ang)*r;
-      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x2,y2);
-      ctx.strokeStyle=`rgba(236,239,229,${.1+l.pct*.4})`; ctx.lineWidth=.8; ctx.stroke();
-      ctx.beginPath(); ctx.arc(x2,y2,2+l.pct*6,0,Math.PI*2);
-      ctx.fillStyle=`rgba(236,239,229,${.3+l.pct*.5})`; ctx.fill();
-    });
-    const gr=ctx.createRadialGradient(cx,cy,0,cx,cy,maxR*.3);
-    gr.addColorStop(0,'rgba(236,239,229,0.14)'); gr.addColorStop(1,'rgba(14,15,12,0)');
-    ctx.beginPath(); ctx.arc(cx,cy,maxR*.3,0,Math.PI*2);
-    ctx.fillStyle=gr; ctx.fill();
-    ctx.save(); ctx.translate(cx+Math.cos(t*.2)*maxR*.1,cy+Math.sin(t*.15)*maxR*.1);
-    ctx.rotate(t*.3);
-    ctx.fillStyle='rgba(236,239,229,0.55)';
-    ctx.font=`${10+Math.sin(t)*.5}px serif`;
-    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('✦',0,0);
-    ctx.restore();
-    t+=0.012; requestAnimationFrame(draw);
-  }
-  window.addEventListener('resize', resize); resize(); draw();
-})();
-
-/* ── RADIAL CHART ───────────────────────────────── */
-(function(){
-  const c = document.getElementById('radial-canvas');
-  const ctx = c.getContext('2d');
-  const legendEl = document.getElementById('legend');
-  let t=0, hovIdx=-1;
-  const data=[
-    {label:'Contract–bill mismatches', val:32, color:'rgba(236,239,229,'},
-    {label:'Missed escalators',         val:21, color:'rgba(200,205,190,'},
-    {label:'Unbilled usage',            val:18, color:'rgba(160,168,148,'},
-    {label:'Renewal errors',            val:14, color:'rgba(120,130,108,'},
-    {label:'Pricing drift',             val: 9, color:'rgba(255,61,4,'},
-    {label:'Credits & rebates',         val: 6, color:'rgba(80,90,68,'},
-  ];
-  data.forEach((d,i)=>{
-    const row=document.createElement('div'); row.className='legend__item';
-    row.innerHTML=`<div class="legend__dot" style="background:${d.color}0.75)"></div>
-      <span class="legend__label">${d.label}</span>
-      <span class="legend__val">${d.val}%</span>`;
-    row.addEventListener('mouseenter',()=>hovIdx=i);
-    row.addEventListener('mouseleave',()=>hovIdx=-1);
-    legendEl.appendChild(row);
-  });
-  function resize(){ const s=c.offsetWidth; c.width=s; c.height=s; }
-  function draw(){
-    const s=c.width; ctx.clearRect(0,0,s,s);
-    const cx=s/2,cy=s/2,r=s*.38,inner=r*.48;
-    const total=data.reduce((a,d)=>a+d.val,0);
-    let sa=-Math.PI/2;
-    data.forEach((d,i)=>{
-      const sw=(d.val/total)*Math.PI*2, mid=sa+sw/2;
-      const hov=i===hovIdx;
-      ctx.save();
-      ctx.translate(Math.cos(mid)*(hov?r*.07:0),Math.sin(mid)*(hov?r*.07:0));
-      ctx.beginPath(); ctx.moveTo(cx,cy);
-      ctx.arc(cx,cy,r+(hov?8:0),sa,sa+sw); ctx.closePath();
-      ctx.fillStyle=d.color+(hov?.85:.55)+')'; ctx.fill();
-      ctx.beginPath(); ctx.moveTo(cx,cy);
-      ctx.arc(cx,cy,inner,sa,sa+sw); ctx.closePath();
-      ctx.fillStyle='rgba(14,15,12,1)'; ctx.fill();
-      ctx.restore();
-      if(d.val>=12){
-        const lx=cx+Math.cos(mid)*(r+20), ly=cy+Math.sin(mid)*(r+20);
-        ctx.fillStyle=hov?'rgba(236,239,229,0.9)':'rgba(236,239,229,0.35)';
-        ctx.font='10px JetBrains Mono,monospace';
-        ctx.textAlign='center'; ctx.textBaseline='middle';
-        ctx.fillText(d.val+'%',lx,ly);
-      }
-      sa+=sw;
-    });
-    ctx.beginPath(); ctx.arc(cx,cy,inner*.96+Math.sin(t)*1.5,0,Math.PI*2);
-    ctx.strokeStyle='rgba(236,239,229,0.06)'; ctx.lineWidth=1; ctx.stroke();
-    ctx.fillStyle='rgba(236,239,229,0.8)';
-    ctx.font=`${s*.05}px Helvetica Neue,Arial,sans-serif`;
-    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('Leakage',cx,cy-10);
-    ctx.fillStyle='rgba(236,239,229,0.3)'; ctx.font=`${s*.03}px JetBrains Mono,monospace`;
-    ctx.fillText('breakdown',cx,cy+12);
-    t+=0.015; requestAnimationFrame(draw);
-  }
-  c.addEventListener('mousemove',e=>{
-    const rect=c.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
-    const s=c.width, cx=s/2,cy=s/2, r=s*.38, inner=r*.48;
-    const dx=mx-cx,dy=my-cy, dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<r && dist>inner){
-      let ang=Math.atan2(dy,dx)+Math.PI/2; if(ang<0)ang+=Math.PI*2;
-      const total=data.reduce((a,d)=>a+d.val,0); let acc=0; hovIdx=-1;
-      data.forEach((d,i)=>{ const sw=(d.val/total)*Math.PI*2; if(ang>=acc&&ang<acc+sw)hovIdx=i; acc+=sw; });
-      document.querySelectorAll('.legend__item').forEach((r,i)=>r.style.opacity=hovIdx===-1||hovIdx===i?'1':'0.35');
-    } else { hovIdx=-1; document.querySelectorAll('.legend__item').forEach(r=>r.style.opacity='1'); }
-  });
-  c.addEventListener('mouseleave',()=>{ hovIdx=-1; document.querySelectorAll('.legend__item').forEach(r=>r.style.opacity='1'); });
-  window.addEventListener('resize',resize); resize(); draw();
-})();
-
-/* ── TERMINAL ───────────────────────────────────── */
-(function(){
-  const el=document.getElementById('terminal-log');
-  const lines=[
-    {c:'t-dim', t:'[ 2026-04-02 08:00:01 ] Revorion audit engine started'},
-    {c:'t-dim', t:'[ 08:00:04 ] Connecting to NetSuite...'},
-    {c:'t-ok',  t:'[ 08:00:06 ] NetSuite — CONNECTED (34,218 records)'},
-    {c:'t-dim', t:'[ 08:00:07 ] Connecting to Salesforce...'},
-    {c:'t-ok',  t:'[ 08:00:09 ] Salesforce — CONNECTED (12,441 opportunities)'},
-    {c:'t-dim', t:'[ 08:00:10 ] Loading contract repository...'},
-    {c:'t-ok',  t:'[ 08:00:13 ] Contracts ingested: 891 active agreements'},
-    {c:'t-dim', t:'[ 08:00:14 ] Running reconciliation pass 1/3...'},
-    {c:'t-warn',t:'[ 08:00:22 ] FLAG — contract #4872: price escalator not applied (est. $43,200)'},
-    {c:'t-warn',t:'[ 08:00:23 ] FLAG — account Meridian Corp: renewal 14 days overdue'},
-    {c:'t-dim', t:'[ 08:00:26 ] Running reconciliation pass 2/3...'},
-    {c:'t-warn',t:'[ 08:00:31 ] FLAG — 3 invoices missing usage charges (est. $18,750)'},
-    {c:'t-warn',t:'[ 08:00:32 ] FLAG — discount override outside policy: -22% on #A-0091'},
-    {c:'t-dim', t:'[ 08:00:35 ] Running reconciliation pass 3/3...'},
-    {c:'t-ok',  t:'[ 08:00:41 ] Pass complete — 0 system errors'},
-    {c:'t-warn',t:'[ 08:00:42 ] TOTAL RECOVERABLE THIS CYCLE: $214,780'},
-    {c:'t-ok',  t:'[ 08:00:45 ] 12 tickets created. 3 high priority.'},
-    {c:'t-dim', t:'[ 08:00:46 ] Next scheduled run: 09:00:00'},
-    {c:'t-dim', t:'─────────────────────────────────────────────'},
-  ];
-  let i=0;
+  let i = 0;
   function next(){
-    if(i>=lines.length){i=0;el.innerHTML='';}
-    const d=document.createElement('div');
-    d.className=lines[i].c; d.textContent=lines[i].t;
-    el.appendChild(d); el.scrollTop=el.scrollHeight; i++;
-    setTimeout(next, 160+Math.random()*260);
+    if(i >= lines.length){ i = 0; el.innerHTML = ''; }
+    const d = document.createElement('div');
+    d.className = lines[i].c; d.textContent = lines[i].t;
+    el.appendChild(d); el.scrollTop = el.scrollHeight; i++;
+    setTimeout(next, 160 + Math.random() * 260);
   }
   next();
 })();
+
+/* ── CFO BG — cursor-driven focus blur ─────────── */
+(function cfoCursorFocus(){
+  const cfo = document.getElementById('cfo');
+  if(!cfo) return;
+
+  let targetX = 50;
+  let targetY = 50;
+  let currentX = 50;
+  let currentY = 50;
+
+  function toPercent(clientX, clientY){
+    const rect = cfo.getBoundingClientRect();
+    if(!rect.width || !rect.height) return null;
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((clientY - rect.top) / rect.height) * 100;
+    return {
+      x: Math.max(0, Math.min(100, x)),
+      y: Math.max(0, Math.min(100, y))
+    };
+  }
+
+  cfo.addEventListener('mousemove', (e) => {
+    const p = toPercent(e.clientX, e.clientY);
+    if(!p) return;
+    targetX = p.x;
+    targetY = p.y;
+  });
+
+  cfo.addEventListener('mouseleave', () => {
+    targetX = 50;
+    targetY = 50;
+  });
+
+  const sharp = cfo.querySelector('.cfo__bg--sharp');
+  const blur = cfo.querySelector('.cfo__bg--blur');
+
+  function tick(){
+    const ease = 0.18;
+    currentX += (targetX - currentX) * ease;
+    currentY += (targetY - currentY) * ease;
+    cfo.style.setProperty('--cfo-focus-x', currentX.toFixed(3) + '%');
+    cfo.style.setProperty('--cfo-focus-y', currentY.toFixed(3) + '%');
+
+    const tiltX = ((currentY - 50) / 50) * -2.5;
+    const tiltY = ((currentX - 50) / 50) * 2.5;
+    const tilt = 'rotateX(' + tiltX.toFixed(3) + 'deg) rotateY(' + tiltY.toFixed(3) + 'deg) scale(1.04)';
+    if(sharp) sharp.style.transform = tilt;
+    if(blur) blur.style.transform = tilt;
+
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* ── ASCII scan effect on money image ── */
+(function(){
+  var figure = document.querySelector('.problem__header-figure');
+  var canvas = document.querySelector('.problem__ascii-scan');
+  var img = document.querySelector('.problem__header-img');
+  if(!figure || !canvas || !img) return;
+
+  var ctx = canvas.getContext('2d');
+  var density = "     .,:;|/\\-_+~()[]{}!?iIl1t0OZmwqpdbkhao*#MW&8%B@$%@&*";
+  var charSize = 11;
+  var barH = 30;
+  var cellW = 12.5;
+  var cellH = 12;
+  var inkRgb = revorionTokenRgb('--color-ink');
+  var cols = 0;
+  var rows = 0;
+  var grid = [];
+  var isVisible = false;
+  var rafId = null;
+
+  function monoFontStack(){
+    return getComputedStyle(document.documentElement).getPropertyValue('--font-mono').trim() || 'JetBrains Mono, monospace';
+  }
+
+  function randChar(){
+    var ch = density[Math.floor(Math.random() * density.length)];
+    /* Match hero hover feel: occasional binary jitter on top of mixed charset. */
+    if(Math.random() > 0.88){
+      ch = Math.random() > 0.5 ? '1' : '0';
+    }
+    return ch;
+  }
+
+  function resize(){
+    var rect = canvas.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    cols = Math.floor(rect.width / cellW);
+    rows = Math.floor(rect.height / cellH);
+    grid = [];
+    for(var i = 0; i < cols * rows; i++) grid.push(randChar());
+  }
+
+  function scrambleRow(row){
+    for(var c = 0; c < cols; c++){
+      grid[row * cols + c] = randChar();
+    }
+  }
+
+  function draw(){
+    var rect = canvas.getBoundingClientRect();
+    var h = rect.height;
+    var w = rect.width;
+
+    ctx.clearRect(0, 0, w, h);
+    if(!isVisible){
+      rafId = requestAnimationFrame(draw);
+      return;
+    }
+
+    var figRect = figure.getBoundingClientRect();
+    var viewH = window.innerHeight;
+    var start = viewH;
+    var end = viewH * 0.15;
+    var progress = (start - figRect.top) / (start - end);
+    progress = Math.max(0, Math.min(1, progress));
+    var relY = progress * h;
+    var scanRows = Math.floor(relY / cellH);
+    var scanCutY = scanRows * cellH;
+    var complete = scanRows >= rows;
+    var scanOn = relY > 0 && !complete;
+    figure.style.setProperty('--problem-scan-on', scanOn ? '1' : '0');
+
+    if(complete){
+      figure.style.setProperty('--problem-scan-y', (h + barH) + 'px');
+    } else {
+      figure.style.setProperty('--problem-scan-y', scanCutY + 'px');
+    }
+
+    var barActual = complete ? 0 : Math.min(scanCutY, barH);
+    var asciiCutY = complete ? h : (scanCutY - barActual);
+
+    var asciiRows = Math.floor(asciiCutY / cellH);
+    var lastRow = Math.min(rows - 1, complete ? rows - 1 : asciiRows - 1);
+    if(lastRow < 0){
+      rafId = requestAnimationFrame(draw);
+      return;
+    }
+
+    for(var r = 0; r <= lastRow; r++){
+      scrambleRow(r);
+    }
+
+    ctx.font = charSize + 'px ' + monoFontStack();
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    for(var row = 0; row <= lastRow; row++){
+      ctx.fillStyle = 'rgba(' + inkRgb[0] + ',' + inkRgb[1] + ',' + inkRgb[2] + ',0.46)';
+      for(var col = 0; col < cols; col++){
+        ctx.fillText(grid[row * cols + col], col * cellW, row * cellH);
+      }
+    }
+
+    /* Precise silhouette mask from actual image alpha (not pixel-grid). */
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.drawImage(img, 0, 0, w, h);
+    ctx.globalCompositeOperation = 'source-over';
+
+    rafId = requestAnimationFrame(draw);
+  }
+
+  var observer = new IntersectionObserver(function(entries){
+    isVisible = entries[0].isIntersecting;
+  }, { threshold: 0.05 });
+  observer.observe(canvas);
+
+  window.addEventListener('resize', resize);
+  resize();
+  rafId = requestAnimationFrame(draw);
+})();
+
 </script>
+
+<!-- TEMP: remove before launch — 12-col overlay matches .container gutters + 1312px band -->
+<div id="grid-debug-overlay" class="grid-debug-overlay" aria-hidden="true">
+  <div class="grid-debug-overlay__inner">
+    <span class="grid-debug-overlay__col" data-col="1"></span>
+    <span class="grid-debug-overlay__col" data-col="2"></span>
+    <span class="grid-debug-overlay__col" data-col="3"></span>
+    <span class="grid-debug-overlay__col" data-col="4"></span>
+    <span class="grid-debug-overlay__col" data-col="5"></span>
+    <span class="grid-debug-overlay__col" data-col="6"></span>
+    <span class="grid-debug-overlay__col" data-col="7"></span>
+    <span class="grid-debug-overlay__col" data-col="8"></span>
+    <span class="grid-debug-overlay__col" data-col="9"></span>
+    <span class="grid-debug-overlay__col" data-col="10"></span>
+    <span class="grid-debug-overlay__col" data-col="11"></span>
+    <span class="grid-debug-overlay__col" data-col="12"></span>
+  </div>
+  <p class="grid-debug-overlay__legend">12 columns · max 1312px · var(--page-padding-inline) · var(--grid-gutter)</p>
+</div>
+
 </body>
 </html>
